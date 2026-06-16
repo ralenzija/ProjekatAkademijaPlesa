@@ -21,7 +21,7 @@ import dance.academy.common.model.Ucesnik;
 import dance.academy.common.model.UpisNaProgram;
 import dance.academy.common.model.Sertifikat;
 import dance.academy.common.model.kriterijum.KriterijumPretrage;
-
+import com.google.gson.Gson;
 /**
  *
  * @author Korisnik
@@ -49,7 +49,7 @@ public class ObradaKlijentskihZahteva extends Thread {
             try {
                 Zahtev zahtev = (Zahtev) receiver.primi();
                 Odgovor odgovor = new Odgovor();
-                
+                Gson gson = new Gson();
                 switch (zahtev.getOperacija()) {
                     
                     case LOGIN:
@@ -65,6 +65,7 @@ public class ObradaKlijentskihZahteva extends Thread {
                         
                         List<Ucesnik> lista = Controller.getInstance().ucitajUcesnike();
                         odgovor.setOdgovor(lista);
+                        odgovor.setJsonOdgovor(gson.toJson(lista));
                         sender.posalji(odgovor);
                         
                         break;
@@ -74,6 +75,7 @@ public class ObradaKlijentskihZahteva extends Thread {
                         Ucesnik u = (Ucesnik) zahtev.getParametar();
                         List<Ucesnik> filtrirani = Controller.getInstance().pretraziUcesnike(u);
                         odgovor.setOdgovor(filtrirani);
+                        odgovor.setJsonOdgovor(gson.toJson(filtrirani));
                         sender.posalji(odgovor);
                         
                         break;
@@ -127,6 +129,7 @@ public class ObradaKlijentskihZahteva extends Thread {
                         
                         List<Instruktor> instruktori = Controller.getInstance().ucitajInstruktore();
                         odgovor.setOdgovor(instruktori);
+                        odgovor.setJsonOdgovor(gson.toJson(instruktori));
                         sender.posalji(odgovor);
                         
                         break;
@@ -135,6 +138,7 @@ public class ObradaKlijentskihZahteva extends Thread {
                         
                         List<UpisNaProgram> upisi = Controller.getInstance().ucitajUpise();
                         odgovor.setOdgovor(upisi);
+                        odgovor.setJsonOdgovor(gson.toJson(upisi));
                         sender.posalji(odgovor);
                         
                         break;
@@ -144,6 +148,7 @@ public class ObradaKlijentskihZahteva extends Thread {
                         KriterijumPretrage kp = (KriterijumPretrage) zahtev.getParametar();
                         List<UpisNaProgram> filtrirane = Controller.getInstance().pretraziUpise(kp);
                         odgovor.setOdgovor(filtrirane);
+                        odgovor.setJsonOdgovor(gson.toJson(filtrirane));
                         sender.posalji(odgovor);
                         
                         break;
@@ -152,6 +157,7 @@ public class ObradaKlijentskihZahteva extends Thread {
                         
                         List<ProgramAktivnosti> programi = Controller.getInstance().ucitajPrograme();
                         odgovor.setOdgovor(programi);
+                        odgovor.setJsonOdgovor(gson.toJson(programi));
                         sender.posalji(odgovor);
                         
                         break;
@@ -187,6 +193,7 @@ public class ObradaKlijentskihZahteva extends Thread {
                         ProgramAktivnosti filter = (ProgramAktivnosti) zahtev.getParametar();
                         List<ProgramAktivnosti> preporuceni = Controller.getInstance().preporuciProgram(filter);
                         odgovor.setOdgovor(preporuceni);
+                        odgovor.setJsonOdgovor(gson.toJson(preporuceni));
                         sender.posalji(odgovor);
                         break;
                         
