@@ -22,3 +22,14 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+# NetBeans
+nbproject/private/
+build/
+dist/
+
+# Config sa lozinkama
+config/config.properties
+/Maven-Projekti/Common/target/
+/Maven-Projekti/Server/target/
+/Maven-Projekti/Client/target/
+Maven-Projekti/Server/config/
