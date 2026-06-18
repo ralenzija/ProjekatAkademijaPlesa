@@ -33,3 +33,6 @@ config/config.properties
 /Maven-Projekti/Server/target/
 /Maven-Projekti/Client/target/
 Maven-Projekti/Server/config/
+/Maven-Projekti/Common/nbproject/
+/Maven-Projekti/Server/nbproject/
+/Maven-Projekti/Client/nbproject/
