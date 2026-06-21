@@ -63,7 +63,7 @@ public class PreporuciProgramSOTest {
     public void testPreporuciValidanProgram() throws Exception {
         List<ProgramAktivnosti> lista = new ArrayList<>();
         lista.add(program);
-        Mockito.when(mockBroker.getAll(Mockito.any(ProgramAktivnosti.class), Mockito.anyString()))
+        Mockito.when(mockBroker.getAll(Mockito.any(ProgramAktivnosti.class), Mockito.isNull()))
                 .thenReturn((List) lista);
 
         preporuciProgramSO.izvrsi(program, null);
@@ -93,7 +93,7 @@ public class PreporuciProgramSOTest {
                 LocalTime.of(17, 0), 15, "");
         lista.add(jeftiniji);
         lista.add(program);
-        Mockito.when(mockBroker.getAll(Mockito.any(ProgramAktivnosti.class), Mockito.anyString()))
+        Mockito.when(mockBroker.getAll(Mockito.any(ProgramAktivnosti.class), Mockito.isNull()))
                 .thenReturn((List) lista);
 
         preporuciProgramSO.izvrsi(program, null);

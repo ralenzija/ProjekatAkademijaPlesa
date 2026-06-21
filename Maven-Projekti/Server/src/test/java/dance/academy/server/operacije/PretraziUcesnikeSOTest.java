@@ -43,7 +43,8 @@ public class PretraziUcesnikeSOTest {
     public void testPretraziPoImenu() throws Exception {
         List<Ucesnik> lista = new ArrayList<>();
         lista.add(ucesnik);
-        Mockito.when(mockBroker.getAll(Mockito.any(Ucesnik.class), Mockito.anyString()))
+        Mockito.when(mockBroker.getAll(Mockito.any(Ucesnik.class),
+                Mockito.eq(" JOIN nivo_vestine ON ucesnik.nivo=nivo_vestine.id")))
                 .thenReturn((List) lista);
 
         ucesnik.setEmail(null);
@@ -57,7 +58,8 @@ public class PretraziUcesnikeSOTest {
     public void testPretraziPoEmailu() throws Exception {
         List<Ucesnik> lista = new ArrayList<>();
         lista.add(ucesnik);
-        Mockito.when(mockBroker.getAll(Mockito.any(Ucesnik.class), Mockito.anyString()))
+        Mockito.when(mockBroker.getAll(Mockito.any(Ucesnik.class),
+                Mockito.eq(" JOIN nivo_vestine ON ucesnik.nivo=nivo_vestine.id")))
                 .thenReturn((List) lista);
 
         ucesnik.setIme(null);
@@ -70,7 +72,8 @@ public class PretraziUcesnikeSOTest {
     @Test
     public void testPretraziPraznaLista() throws Exception {
         List<Ucesnik> praznaLista = new ArrayList<>();
-        Mockito.when(mockBroker.getAll(Mockito.any(Ucesnik.class), Mockito.anyString()))
+        Mockito.when(mockBroker.getAll(Mockito.any(Ucesnik.class),
+                Mockito.eq(" JOIN nivo_vestine ON ucesnik.nivo=nivo_vestine.id")))
                 .thenReturn((List) praznaLista);
 
         pretraziUcesnikeSO.izvrsi(ucesnik, null);

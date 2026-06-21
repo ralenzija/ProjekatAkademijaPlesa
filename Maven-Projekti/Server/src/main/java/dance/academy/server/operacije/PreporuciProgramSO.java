@@ -7,6 +7,8 @@ import java.util.logging.Logger;
 import dance.academy.common.model.PlesniStil;
 import dance.academy.common.model.ProgramAktivnosti;
 import dance.academy.server.repozitorijum.Repository;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 /**
  * Sistemska operacija za preporuku programa aktivnosti učesniku.
@@ -77,13 +79,17 @@ public class PreporuciProgramSO extends ApstraktnaGenerickaOperacija {
     @Override
     protected void izvrsiOperaciju(Object param, Object kljuc) {
         ProgramAktivnosti pa = (ProgramAktivnosti) param;
-        String uslov = " WHERE program_aktivnosti.vrsta='" + pa.getVrsta().name() + "'";
-        if (pa.isAktivan()) {
-            uslov += " AND program_aktivnosti.aktivan=1";
-        }
-        uslov += " ORDER BY program_aktivnosti.cena ASC";
+        PlesniStil trazeniStil = pa.getVrsta();
+
         try {
-            programi = broker.getAll(new ProgramAktivnosti(), uslov);
+            List<ProgramAktivnosti> svi = broker.getAll(new ProgramAktivnosti(), null);
+
+            programi = svi.stream()
+                    .filter(p -> p.getVrsta() == trazeniStil)
+                    .filter(p -> !pa.isAktivan() || p.isAktivan())
+                    .sorted(Comparator.comparingDouble(ProgramAktivnosti::getCena))
+                    .collect(Collectors.toList());
+
         } catch (Exception ex) {
             Logger.getLogger(PreporuciProgramSO.class.getName()).log(Level.SEVERE, null, ex);
         }

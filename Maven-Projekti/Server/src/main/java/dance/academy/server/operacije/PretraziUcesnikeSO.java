@@ -5,6 +5,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import dance.academy.common.model.Ucesnik;
 import dance.academy.server.repozitorijum.Repository;
+import java.util.stream.Collectors;
+
 
 /**
  * Sistemska operacija za pretragu učesnika po zadatim kriterijumima.
@@ -67,24 +69,23 @@ public class PretraziUcesnikeSO extends ApstraktnaGenerickaOperacija {
      * pretrage
      * @param kljuc nije korišćen u ovoj operaciji
      */
-    @Override
-    protected void izvrsiOperaciju(Object param, Object kljuc) {
-        Ucesnik u = (Ucesnik) param;
-        String uslov = " JOIN nivo_vestine ON ucesnik.nivo=nivo_vestine.id";
-        if (u.getIme() != null && u.getEmail() == null) {
-            uslov += " WHERE ucesnik.ime='" + u.getIme() + "' AND ucesnik.prezime='" + u.getPrezime() + "'";
-        } else if (u.getIme() == null && u.getEmail() != null) {
-            uslov += " WHERE ucesnik.email='" + u.getEmail() + "'";
-        } else {
-            uslov += " WHERE ucesnik.ime='" + u.getIme() + "' AND ucesnik.prezime='" + u.getPrezime()
-                    + "' AND ucesnik.email='" + u.getEmail() + "'";
-        }
-        try {
-            ucesnici = broker.getAll((Ucesnik) param, uslov);
-        } catch (Exception ex) {
-            Logger.getLogger(UcitajUcesnikeSO.class.getName()).log(Level.SEVERE, null, ex);
-        }
+   @Override
+protected void izvrsiOperaciju(Object param, Object kljuc) {
+    Ucesnik u = (Ucesnik) param;
+    try {
+        List<Ucesnik> svi = broker.getAll(new Ucesnik(),
+                " JOIN nivo_vestine ON ucesnik.nivo=nivo_vestine.id");
+
+        ucesnici = svi.stream()
+                .filter(uc -> u.getIme() == null || uc.getIme().equalsIgnoreCase(u.getIme()))
+                .filter(uc -> u.getPrezime() == null || uc.getPrezime().equalsIgnoreCase(u.getPrezime()))
+                .filter(uc -> u.getEmail() == null || uc.getEmail().equalsIgnoreCase(u.getEmail()))
+                .collect(Collectors.toList());
+
+    } catch (Exception ex) {
+        Logger.getLogger(UcitajUcesnikeSO.class.getName()).log(Level.SEVERE, null, ex);
     }
+}
 
     /**
      * Vraća listu učesnika koji odgovaraju zadatim kriterijumima pretrage.
