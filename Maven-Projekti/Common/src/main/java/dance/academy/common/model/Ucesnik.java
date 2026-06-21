@@ -19,33 +19,49 @@ import java.util.Objects;
  */
 public class Ucesnik implements ApstraktniDomenskiObjekat {
 
-    /** Jedinstveni identifikator učesnika u bazi podataka. */
+    /**
+     * Jedinstveni identifikator učesnika u bazi podataka.
+     */
     private int id;
 
-    /** Ime učesnika. */
+    /**
+     * Ime učesnika.
+     */
     private String ime;
 
-    /** Prezime učesnika. */
+    /**
+     * Prezime učesnika.
+     */
     private String prezime;
 
-    /** Email adresa učesnika, koristi se i za identifikaciju. */
+    /**
+     * Email adresa učesnika, koristi se i za identifikaciju.
+     */
     private String email;
 
-    /** Nivo veštine učesnika u plesu, određuje u koje kurseve može da se upiše. */
+    /**
+     * Nivo veštine učesnika u plesu, određuje u koje kurseve može da se upiše.
+     */
     private NivoVestine nivo;
 
-    /** Kontakt telefon učesnika. */
+    /**
+     * Kontakt telefon učesnika.
+     */
     private String telefon;
 
-    /** Datum rođenja učesnika. */
+    /**
+     * Datum rođenja učesnika.
+     */
     private java.time.LocalDate datumRodjenja;
 
-    /** Dodatne napomene o učesniku (zdravstvena stanja, posebni zahtevi i sl.). */
+    /**
+     * Dodatne napomene o učesniku (zdravstvena stanja, posebni zahtevi i sl.).
+     */
     private String napomena;
 
     /**
-     * Podrazumevani konstruktor bez argumenata.
-     * Koristi se pri kreiranju praznog objekta pre popunjavanja podataka.
+     * Podrazumevani konstruktor bez argumenata. Koristi se pri kreiranju
+     * praznog objekta pre popunjavanja podataka.
      */
     public Ucesnik() {
     }
@@ -53,14 +69,14 @@ public class Ucesnik implements ApstraktniDomenskiObjekat {
     /**
      * Konstruktor koji inicijalizuje učesnika sa svim potrebnim podacima.
      *
-     * @param id             jedinstveni identifikator učesnika
-     * @param ime            ime učesnika
-     * @param prezime        prezime učesnika
-     * @param email          email adresa učesnika
-     * @param nivo           nivo veštine učesnika u plesu
-     * @param telefon        kontakt telefon učesnika
-     * @param datumRodjenja  datum rođenja učesnika
-     * @param napomena       dodatne napomene o učesniku
+     * @param id jedinstveni identifikator učesnika
+     * @param ime ime učesnika
+     * @param prezime prezime učesnika
+     * @param email email adresa učesnika
+     * @param nivo nivo veštine učesnika u plesu
+     * @param telefon kontakt telefon učesnika
+     * @param datumRodjenja datum rođenja učesnika
+     * @param napomena dodatne napomene o učesniku
      */
     public Ucesnik(int id, String ime, String prezime, String email, NivoVestine nivo,
             String telefon, LocalDate datumRodjenja, String napomena) {
@@ -235,20 +251,30 @@ public class Ucesnik implements ApstraktniDomenskiObjekat {
     }
 
     /**
-     * Poredi dva učesnika po imenu, prezimenu i email adresi.
-     * Dva učesnika su jednaka ako im se poklapaju sva tri polja.
+     * Poredi dva učesnika po imenu, prezimenu i email adresi. Dva učesnika su
+     * jednaka ako im se poklapaju sva tri polja.
      *
      * @param obj objekat sa kojim se poredi
      * @return {@code true} ako su učesnici jednaki, {@code false} inače
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
         final Ucesnik other = (Ucesnik) obj;
-        if (!Objects.equals(this.ime, other.ime)) return false;
-        if (!Objects.equals(this.prezime, other.prezime)) return false;
+        if (!Objects.equals(this.ime, other.ime)) {
+            return false;
+        }
+        if (!Objects.equals(this.prezime, other.prezime)) {
+            return false;
+        }
         return Objects.equals(this.email, other.email);
     }
 
@@ -344,7 +370,7 @@ public class Ucesnik implements ApstraktniDomenskiObjekat {
      */
     @Override
     public String vratiVrednostiZaIzmenu() {
-        return "'" + ime + "','" + prezime + "','" + email + "','" + telefon + "','"
-                + java.sql.Date.valueOf(datumRodjenja) + "','" + napomena + "'," + nivo.getId();
+        return "ime='" + ime + "',prezime='" + prezime + "',email='" + email + "',telefon='" + telefon + "',datum_rodjenja='"
+                + java.sql.Date.valueOf(datumRodjenja) + "',napomena='" + napomena + "',nivo=" + nivo.getId();
     }
 }

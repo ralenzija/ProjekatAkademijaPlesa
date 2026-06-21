@@ -8,7 +8,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>23</maven.compiler.release>
-        <exec.mainClass>dance.academy.client.Client</exec.mainClass>
+        <exec.mainClass>dance.academy.client.main.Main</exec.mainClass>
     </properties>
     <dependencies>
         <dependency>

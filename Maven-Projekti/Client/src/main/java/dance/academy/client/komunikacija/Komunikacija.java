@@ -2,7 +2,8 @@ package dance.academy.client.komunikacija;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import dance.academy.common.model.Instruktor;
 import dance.academy.common.model.ProgramAktivnosti;
@@ -17,6 +18,10 @@ import dance.academy.common.komunikacija.Operacija;
 import dance.academy.common.komunikacija.Posiljalac;
 import dance.academy.common.komunikacija.Primalac;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 
@@ -47,15 +52,32 @@ public class Komunikacija {
     /** Objekat za primanje odgovora od servera. */
     private Primalac primalac;
 
+    /** Gson instanca sa custom adapterima za LocalDate i LocalTime. */
+    private final Gson gson;
+
     /**
      * Privatni konstruktor sprečava direktno instanciranje.
+     * Inicijalizuje Gson sa custom adapterima za Java Time tipove.
      */
     private Komunikacija() {
+        gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class,
+                        (JsonSerializer<LocalDate>) (src, typeOfSrc, context)
+                        -> new JsonPrimitive(src.toString()))
+                .registerTypeAdapter(LocalDate.class,
+                        (JsonDeserializer<LocalDate>) (json, typeOfT, context)
+                        -> LocalDate.parse(json.getAsString()))
+                .registerTypeAdapter(LocalTime.class,
+                        (JsonSerializer<LocalTime>) (src, typeOfSrc, context)
+                        -> new JsonPrimitive(src.toString()))
+                .registerTypeAdapter(LocalTime.class,
+                        (JsonDeserializer<LocalTime>) (json, typeOfT, context)
+                        -> LocalTime.parse(json.getAsString()))
+                .create();
     }
 
     /**
      * Vraća jedinu instancu klase Komunikacija.
-     * Ako instanca još ne postoji, kreira je.
      *
      * @return jedina instanca klase Komunikacija
      */
@@ -68,10 +90,6 @@ public class Komunikacija {
 
     /**
      * Uspostavlja socket konekciju sa serverom na adresi localhost:9000.
-     * <p>
-     * Inicijalizuje {@link Posiljalac} i {@link Primalac} koji se koriste
-     * za slanje i primanje objekata tokom sesije.
-     * </p>
      */
     public void konekcija() {
         try {
@@ -100,13 +118,12 @@ public class Komunikacija {
     /**
      * Traži od servera listu svih učesnika i deserijalizuje je iz JSON-a.
      *
-     * @return lista svih učesnika sa nivoima veštine
+     * @return lista svih učesnika
      */
     public List<Ucesnik> ucitajUcesnike() {
         Zahtev z = new Zahtev(Operacija.UCITAJ_UCESNIKE, null);
         posiljalac.posalji(z);
         Odgovor o = (Odgovor) primalac.primi();
-        Gson gson = new Gson();
         Type type = new TypeToken<List<Ucesnik>>() {}.getType();
         return gson.fromJson(o.getJsonOdgovor(), type);
     }
@@ -121,17 +138,12 @@ public class Komunikacija {
         Zahtev z = new Zahtev(Operacija.PRETRAZI_UCESNIKE, u);
         posiljalac.posalji(z);
         Odgovor o = (Odgovor) primalac.primi();
-        Gson gson = new Gson();
         Type type = new TypeToken<List<Ucesnik>>() {}.getType();
         return gson.fromJson(o.getJsonOdgovor(), type);
     }
 
     /**
-     * Traži od servera nivo veštine koji odgovara zadatom stilu i nivou plesa.
-     * <p>
-     * Koristi se interno pri kreiranju i izmeni učesnika kako bi se
-     * dobio ID nivoa veštine pre slanja učesnika na server.
-     * </p>
+     * Traži nivo veštine koji odgovara zadatom stilu i nivou plesa.
      *
      * @param nv nivo veštine sa postavljenim nivoom i stilom plesa
      * @return odgovarajući nivo veštine iz baze
@@ -146,7 +158,6 @@ public class Komunikacija {
 
     /**
      * Šalje zahtev za kreiranje novog učesnika.
-     * Pre slanja, pronalazi i postavlja odgovarajući nivo veštine iz baze.
      *
      * @param u učesnik koji se kreira
      */
@@ -200,7 +211,6 @@ public class Komunikacija {
 
     /**
      * Šalje zahtev za izmenu podataka učesnika.
-     * Pre slanja, ažurira nivo veštine učesnika iz baze.
      *
      * @param uc učesnik sa izmenjenim podacima
      */
@@ -227,7 +237,6 @@ public class Komunikacija {
         Zahtev z = new Zahtev(Operacija.UCITAJ_INSTRUKTORE, null);
         posiljalac.posalji(z);
         Odgovor o = (Odgovor) primalac.primi();
-        Gson gson = new Gson();
         Type type = new TypeToken<List<Instruktor>>() {}.getType();
         return gson.fromJson(o.getJsonOdgovor(), type);
     }
@@ -235,13 +244,12 @@ public class Komunikacija {
     /**
      * Traži od servera listu svih upisa i deserijalizuje je iz JSON-a.
      *
-     * @return lista svih upisa sa podacima o instruktorima i učesnicima
+     * @return lista svih upisa
      */
     public List<UpisNaProgram> ucitajUpise() {
         Zahtev z = new Zahtev(Operacija.UCITAJ_UPISE, null);
         posiljalac.posalji(z);
         Odgovor o = (Odgovor) primalac.primi();
-        Gson gson = new Gson();
         Type type = new TypeToken<List<UpisNaProgram>>() {}.getType();
         return gson.fromJson(o.getJsonOdgovor(), type);
     }
@@ -249,14 +257,13 @@ public class Komunikacija {
     /**
      * Šalje zahtev za pretragu upisa i deserijalizuje rezultat iz JSON-a.
      *
-     * @param kp kriterijum pretrage sa kombinacijom instruktora, učesnika i datuma
+     * @param kp kriterijum pretrage
      * @return lista upisa koji odgovaraju kriterijumima
      */
     public List<UpisNaProgram> pretraziUpise(KriterijumPretrage kp) {
         Zahtev z = new Zahtev(Operacija.PRETRAZI_UPISE, kp);
         posiljalac.posalji(z);
         Odgovor o = (Odgovor) primalac.primi();
-        Gson gson = new Gson();
         Type type = new TypeToken<List<UpisNaProgram>>() {}.getType();
         return gson.fromJson(o.getJsonOdgovor(), type);
     }
@@ -270,15 +277,14 @@ public class Komunikacija {
         Zahtev z = new Zahtev(Operacija.UCITAJ_PROGRAME, null);
         posiljalac.posalji(z);
         Odgovor o = (Odgovor) primalac.primi();
-        Gson gson = new Gson();
         Type type = new TypeToken<List<ProgramAktivnosti>>() {}.getType();
         return gson.fromJson(o.getJsonOdgovor(), type);
     }
 
     /**
-     * Šalje zahtev za kreiranje novog upisa na program aktivnosti.
+     * Šalje zahtev za kreiranje novog upisa.
      *
-     * @param unp upis koji se kreira sa listom stavki
+     * @param unp upis koji se kreira
      */
     public void kreirajUpis(UpisNaProgram unp) {
         Zahtev z = new Zahtev(Operacija.KREIRAJ_UPIS, unp);
@@ -295,7 +301,7 @@ public class Komunikacija {
     /**
      * Šalje zahtev za izmenu postojećeg upisa.
      *
-     * @param zaIzmenu upis sa izmenjenim podacima i novim stavkama
+     * @param zaIzmenu upis sa izmenjenim podacima
      */
     public void izmeniUpis(UpisNaProgram zaIzmenu) {
         Zahtev z = new Zahtev(Operacija.IZMENI_UPIS, zaIzmenu);
@@ -327,8 +333,7 @@ public class Komunikacija {
     }
 
     /**
-     * Traži od servera preporučene programe po stilu plesa i deserijalizuje ih iz JSON-a.
-     * Rezultati su sortirani po ceni uzlazno.
+     * Traži preporučene programe po stilu plesa i deserijalizuje ih iz JSON-a.
      *
      * @param filter program sa postavljenim stilom plesa kao filterom
      * @return lista preporučenih programa sortiranih po ceni
@@ -337,7 +342,6 @@ public class Komunikacija {
         Zahtev z = new Zahtev(Operacija.PREPORUCI_PROGRAM, filter);
         posiljalac.posalji(z);
         Odgovor o = (Odgovor) primalac.primi();
-        Gson gson = new Gson();
         Type type = new TypeToken<List<ProgramAktivnosti>>() {}.getType();
         return gson.fromJson(o.getJsonOdgovor(), type);
     }
