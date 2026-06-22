@@ -1,4 +1,5 @@
 package dance.academy.common.model;
+
 import java.sql.ResultSet;
 import java.util.Date;
 import java.util.List;
@@ -35,15 +36,16 @@ public class InstruktorSertifikat implements ApstraktniDomenskiObjekat {
 
     /**
      * Konstruktor koji inicijalizuje vezu instruktora i sertifikata.
+     * Poziva odgovarajuće setter metode radi validacije vrednosti.
      *
      * @param instruktor    instruktor koji poseduje sertifikat
      * @param sertifikat    sertifikat koji instruktor poseduje
      * @param datumSticanja datum kada je sertifikat stečen
      */
     public InstruktorSertifikat(Instruktor instruktor, Sertifikat sertifikat, Date datumSticanja) {
-        this.instruktor = instruktor;
-        this.sertifikat = sertifikat;
-        this.datumSticanja = datumSticanja;
+        setInstruktor(instruktor);
+        setSertifikat(sertifikat);
+        setDatumSticanja(datumSticanja);
     }
 
     /**
@@ -51,42 +53,72 @@ public class InstruktorSertifikat implements ApstraktniDomenskiObjekat {
      *
      * @return instruktor
      */
-    public Instruktor getInstruktor() { return instruktor; }
+    public Instruktor getInstruktor() {
+        return instruktor;
+    }
 
     /**
      * Postavlja instruktora koji poseduje sertifikat.
+     * <p>
+     * Instruktor ne sme biti null.
+     * </p>
      *
      * @param instruktor novi instruktor
+     * @throws NullPointerException ukoliko je instruktor null
      */
-    public void setInstruktor(Instruktor instruktor) { this.instruktor = instruktor; }
+    public void setInstruktor(Instruktor instruktor) {
+        if (instruktor == null)
+            throw new NullPointerException("Instruktor ne sme biti null");
+        this.instruktor = instruktor;
+    }
 
     /**
      * Vraća sertifikat koji instruktor poseduje.
      *
      * @return sertifikat
      */
-    public Sertifikat getSertifikat() { return sertifikat; }
+    public Sertifikat getSertifikat() {
+        return sertifikat;
+    }
 
     /**
      * Postavlja sertifikat koji instruktor poseduje.
+     * <p>
+     * Sertifikat ne sme biti null.
+     * </p>
      *
      * @param sertifikat novi sertifikat
+     * @throws NullPointerException ukoliko je sertifikat null
      */
-    public void setSertifikat(Sertifikat sertifikat) { this.sertifikat = sertifikat; }
+    public void setSertifikat(Sertifikat sertifikat) {
+        if (sertifikat == null)
+            throw new NullPointerException("Sertifikat ne sme biti null");
+        this.sertifikat = sertifikat;
+    }
 
     /**
      * Vraća datum kada je instruktor stekao sertifikat.
      *
      * @return datum sticanja sertifikata
      */
-    public Date getDatumSticanja() { return datumSticanja; }
+    public Date getDatumSticanja() {
+        return datumSticanja;
+    }
 
     /**
      * Postavlja datum kada je instruktor stekao sertifikat.
+     * <p>
+     * Datum sticanja ne sme biti null.
+     * </p>
      *
      * @param datumSticanja novi datum sticanja
+     * @throws NullPointerException ukoliko je datum null
      */
-    public void setDatumSticanja(Date datumSticanja) { this.datumSticanja = datumSticanja; }
+    public void setDatumSticanja(Date datumSticanja) {
+        if (datumSticanja == null)
+            throw new NullPointerException("Datum sticanja ne sme biti null");
+        this.datumSticanja = datumSticanja;
+    }
 
     @Override
     public int hashCode() {
@@ -107,7 +139,6 @@ public class InstruktorSertifikat implements ApstraktniDomenskiObjekat {
 
     /**
      * Poredi dve veze instruktor-sertifikat po instruktoru, sertifikatu i datumu sticanja.
-     * Sve tri vrednosti moraju biti jednake da bi objekti bili jednaki.
      *
      * @param obj objekat sa kojim se poredi
      * @return {@code true} ako su veze jednake, {@code false} inače
@@ -129,13 +160,13 @@ public class InstruktorSertifikat implements ApstraktniDomenskiObjekat {
      * @return naziv tabele "instruktor_sertifikat"
      */
     @Override
-    public String vratiNazivTabele() { return "instruktor_sertifikat"; }
+    public String vratiNazivTabele() {
+        return "instruktor_sertifikat";
+    }
 
     /**
      * Nije podržano za ovu klasu.
      *
-     * @param rs rezultat SQL upita
-     * @return nikad se ne vraća
      * @throws UnsupportedOperationException uvek
      */
     @Override
@@ -149,11 +180,12 @@ public class InstruktorSertifikat implements ApstraktniDomenskiObjekat {
      * @return string sa nazivima kolona odvojenim zarezima
      */
     @Override
-    public String vratiKoloneZaUbacivanje() { return "instruktor,sertifikat,datumSticanja"; }
+    public String vratiKoloneZaUbacivanje() {
+        return "instruktor,sertifikat,datumSticanja";
+    }
 
     /**
      * Vraća vrednosti atributa formatiranih za SQL INSERT upit.
-     * Koristi ID-jeve instruktora i sertifikata umesto celih objekata.
      *
      * @return string sa vrednostima odvojenim zarezima
      */
@@ -164,7 +196,6 @@ public class InstruktorSertifikat implements ApstraktniDomenskiObjekat {
 
     /**
      * Vraća uslov primarnog ključa za SQL WHERE klauzulu.
-     * Primarni ključ je kompozitni — sastoji se od ID-ja instruktora i sertifikata.
      *
      * @return string u formatu "instruktor_sertifikat.instruktor=X AND instruktor_sertifikat.sertifikat=Y"
      */
@@ -177,8 +208,6 @@ public class InstruktorSertifikat implements ApstraktniDomenskiObjekat {
     /**
      * Nije podržano za ovu klasu.
      *
-     * @param rs rezultat SQL upita
-     * @return nikad se ne vraća
      * @throws UnsupportedOperationException uvek
      */
     @Override
@@ -189,7 +218,6 @@ public class InstruktorSertifikat implements ApstraktniDomenskiObjekat {
     /**
      * Nije podržano za ovu klasu — sertifikati se ne menjaju, samo dodaju ili brišu.
      *
-     * @return nikad se ne vraća
      * @throws UnsupportedOperationException uvek
      */
     @Override

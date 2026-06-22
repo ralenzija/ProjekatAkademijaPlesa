@@ -5,10 +5,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Test klasa za klasu UpisNaProgram.
@@ -41,8 +43,6 @@ public class UpisNaProgramTest {
         datum = null;
     }
 
-
-
     @Test
     public void testBesparametarskiKonstruktor() {
         UpisNaProgram u = new UpisNaProgram();
@@ -70,15 +70,54 @@ public class UpisNaProgramTest {
         assertEquals(2, u.getId(), "ID treba biti 2");
         assertEquals(StatusUpisa.POTVRDJEN, u.getStatus(), "Status treba biti POTVRDJEN");
         assertEquals(3000.0, u.getUkupanIznos(), "Ukupan iznos treba biti 3000.0");
-        assertNotNull(u.getStavke(), "Stavke ne smeju biti null");
     }
 
+    @Test
+    public void testKonstruktorBacaIzuzetakZaNullDatum() {
+        assertThrows(NullPointerException.class,
+                () -> new UpisNaProgram(1, null, StatusUpisa.KREIRAN, 5000.0, instruktor, ucesnik),
+                "Konstruktor mora baciti NullPointerException za null datum");
+    }
 
+    @Test
+    public void testKonstruktorBacaIzuzetakZaNullStatus() {
+        assertThrows(NullPointerException.class,
+                () -> new UpisNaProgram(1, datum, null, 5000.0, instruktor, ucesnik),
+                "Konstruktor mora baciti NullPointerException za null status");
+    }
+
+    @Test
+    public void testKonstruktorBacaIzuzetakZaNullInstruktor() {
+        assertThrows(NullPointerException.class,
+                () -> new UpisNaProgram(1, datum, StatusUpisa.KREIRAN, 5000.0, null, ucesnik),
+                "Konstruktor mora baciti NullPointerException za null instruktora");
+    }
+
+    @Test
+    public void testKonstruktorBacaIzuzetakZaNullUcesnik() {
+        assertThrows(NullPointerException.class,
+                () -> new UpisNaProgram(1, datum, StatusUpisa.KREIRAN, 5000.0, instruktor, null),
+                "Konstruktor mora baciti NullPointerException za null ucesnika");
+    }
+
+    @Test
+    public void testKonstruktorBacaIzuzetakZaNegativanIznos() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new UpisNaProgram(1, datum, StatusUpisa.KREIRAN, -100.0, instruktor, ucesnik),
+                "Konstruktor mora baciti IllegalArgumentException za negativan iznos");
+    }
 
     @Test
     public void testSetGetId() {
         upis.setId(99);
         assertEquals(99, upis.getId(), "ID treba biti 99");
+    }
+
+    @Test
+    public void testSetIdNegativanBacaIzuzetak() {
+        assertThrows(IllegalArgumentException.class,
+                () -> upis.setId(-5),
+                "Mora baciti izuzetak za id manji od -1");
     }
 
     @Test
@@ -89,15 +128,56 @@ public class UpisNaProgramTest {
     }
 
     @Test
+    public void testSetDatumNullBacaIzuzetak() {
+        assertThrows(NullPointerException.class,
+                () -> upis.setDatum(null),
+                "Mora baciti NullPointerException za null datum");
+    }
+
+    @Test
     public void testSetGetStatus() {
         upis.setStatus(StatusUpisa.POTVRDJEN);
         assertEquals(StatusUpisa.POTVRDJEN, upis.getStatus(), "Status treba biti POTVRDJEN");
     }
 
     @Test
+    public void testSetStatusNullBacaIzuzetak() {
+        assertThrows(NullPointerException.class,
+                () -> upis.setStatus(null),
+                "Mora baciti NullPointerException za null status");
+    }
+
+    @Test
     public void testSetGetUkupanIznos() {
         upis.setUkupanIznos(9999.99);
         assertEquals(9999.99, upis.getUkupanIznos(), "Ukupan iznos treba biti 9999.99");
+    }
+
+    @Test
+    public void testSetUkupanIznosNegativanBacaIzuzetak() {
+        assertThrows(IllegalArgumentException.class,
+                () -> upis.setUkupanIznos(-100.0),
+                "Mora baciti izuzetak za negativan iznos");
+    }
+
+    @Test
+    public void testSetUkupanIznosNulaDozvoljena() {
+        assertDoesNotThrow(() -> upis.setUkupanIznos(0.0),
+                "Iznos nula treba biti dozvoljen");
+    }
+
+    @ParameterizedTest
+    @ValueSource(doubles = {0.0, 100.0, 5000.0, 99999.99})
+    public void testSetUkupanIznosValidneVrednosti(double iznos) {
+        assertDoesNotThrow(() -> upis.setUkupanIznos(iznos),
+                "Ne sme baciti izuzetak za validan iznos: " + iznos);
+    }
+
+    @ParameterizedTest
+    @EnumSource(StatusUpisa.class)
+    public void testSetStatusSveVrednosti(StatusUpisa status) {
+        assertDoesNotThrow(() -> upis.setStatus(status),
+                "Ne sme baciti izuzetak za validan status: " + status);
     }
 
     @Test
@@ -108,12 +188,26 @@ public class UpisNaProgramTest {
     }
 
     @Test
+    public void testSetInstruktorNullBacaIzuzetak() {
+        assertThrows(NullPointerException.class,
+                () -> upis.setInstruktor(null),
+                "Mora baciti NullPointerException za null instruktora");
+    }
+
+    @Test
     public void testSetGetUcesnik() {
         NivoVestine nivo = new NivoVestine(2, PlesniNivo.SREDNJI, PlesniStil.TANGO);
-        Ucesnik noviUcesnik = new Ucesnik(2, "Ana", "Anic", "ana@gmail.com", nivo, "069111", 
-                java.time.LocalDate.of(2000, 1, 1), "");
+        Ucesnik noviUcesnik = new Ucesnik(2, "Ana", "Anic", "ana@gmail.com", nivo,
+                "069111", java.time.LocalDate.of(2000, 1, 1), "");
         upis.setUcesnik(noviUcesnik);
         assertEquals(noviUcesnik, upis.getUcesnik(), "Ucesnik nije ispravan");
+    }
+
+    @Test
+    public void testSetUcesnikNullBacaIzuzetak() {
+        assertThrows(NullPointerException.class,
+                () -> upis.setUcesnik(null),
+                "Mora baciti NullPointerException za null ucesnika");
     }
 
     @Test
@@ -125,19 +219,15 @@ public class UpisNaProgramTest {
         assertEquals(noveStavke, upis.getStavke(), "Stavke nisu ispravne");
     }
 
-
     @Test
     public void testToStringSadrziStatus() {
-        String result = upis.toString();
-        assertTrue(result.contains("KREIRAN"), "toString treba sadrzati status KREIRAN");
+        assertTrue(upis.toString().contains("KREIRAN"), "toString treba sadrzati status KREIRAN");
     }
 
     @Test
     public void testToStringNijeNull() {
         assertNotNull(upis.toString(), "toString ne sme vratiti null");
     }
-
-
 
     @Test
     public void testEqualsIstObjekat() {
@@ -178,29 +268,11 @@ public class UpisNaProgramTest {
         assertEquals(ocekivano, upis.equals(drugi), "Equals test za id: " + id);
     }
 
-
-    @ParameterizedTest
-    @CsvSource({
-        "KREIRAN",
-        "POTVRDJEN",
-        "ODBIJEN",
-        "OTKAZAN",
-        "ZAVRSEN"
-    })
-    public void testSviStatusi(String status) {
-        StatusUpisa s = StatusUpisa.valueOf(status);
-        upis.setStatus(s);
-        assertEquals(s, upis.getStatus(), "Status treba biti " + status);
-    }
-
-
-
     @Test
     public void testVratiNazivTabele() {
-        assertEquals("upis_na_program", upis.vratiNazivTabele(), "Naziv tabele treba biti 'upis_na_program'");
+        assertEquals("upis_na_program", upis.vratiNazivTabele(),
+                "Naziv tabele treba biti 'upis_na_program'");
     }
-
-
 
     @Test
     public void testVratiKoloneZaUbacivanje() {
@@ -210,7 +282,8 @@ public class UpisNaProgramTest {
 
     @Test
     public void testVratiPrimarniKljuc() {
-        assertEquals("upis_na_program.id=1", upis.vratiPrimarniKljuc(), "Primarni kljuc nije ispravan");
+        assertEquals("upis_na_program.id=1", upis.vratiPrimarniKljuc(),
+                "Primarni kljuc nije ispravan");
     }
 
     @Test

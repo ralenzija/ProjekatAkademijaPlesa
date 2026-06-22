@@ -1,4 +1,5 @@
 package dance.academy.common.model;
+
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,7 @@ public class StavkaUpisa implements ApstraktniDomenskiObjekat {
 
     /**
      * Konstruktor koji inicijalizuje stavku upisa sa svim potrebnim podacima.
+     * Poziva odgovarajuće setter metode radi validacije vrednosti.
      *
      * @param rb      redni broj stavke
      * @param iznos   iznos za plaćanje za ovaj program
@@ -45,10 +47,10 @@ public class StavkaUpisa implements ApstraktniDomenskiObjekat {
      * @param program program aktivnosti na koji se stavka odnosi
      */
     public StavkaUpisa(int rb, double iznos, UpisNaProgram upis, ProgramAktivnosti program) {
-        this.rb = rb;
-        this.iznos = iznos;
+        setRb(rb);
+        setIznos(iznos);
         this.upis = upis;
-        this.program = program;
+        setProgram(program);
     }
 
     /**
@@ -62,10 +64,16 @@ public class StavkaUpisa implements ApstraktniDomenskiObjekat {
 
     /**
      * Postavlja redni broj stavke upisa.
+     * <p>
+     * Redni broj mora biti pozitivan broj.
+     * </p>
      *
      * @param rb novi redni broj
+     * @throws IllegalArgumentException ukoliko je redni broj manji ili jednak nuli
      */
     public void setRb(int rb) {
+        if (rb <= 0)
+            throw new IllegalArgumentException("Redni broj mora biti pozitivan");
         this.rb = rb;
     }
 
@@ -80,10 +88,16 @@ public class StavkaUpisa implements ApstraktniDomenskiObjekat {
 
     /**
      * Postavlja iznos koji učesnik plaća za ovaj program.
+     * <p>
+     * Iznos ne sme biti negativan.
+     * </p>
      *
      * @param iznos novi iznos
+     * @throws IllegalArgumentException ukoliko je iznos negativan
      */
     public void setIznos(double iznos) {
+        if (iznos < 0)
+            throw new IllegalArgumentException("Iznos ne sme biti negativan");
         this.iznos = iznos;
     }
 
@@ -98,6 +112,10 @@ public class StavkaUpisa implements ApstraktniDomenskiObjekat {
 
     /**
      * Postavlja upis na program kome ova stavka pripada.
+     * <p>
+     * Upis može biti null — stavka se može kreirati pre nego što je
+     * pridružena konkretnom upisu.
+     * </p>
      *
      * @param upis novi upis
      */
@@ -116,10 +134,16 @@ public class StavkaUpisa implements ApstraktniDomenskiObjekat {
 
     /**
      * Postavlja program aktivnosti na koji se ova stavka odnosi.
+     * <p>
+     * Program aktivnosti ne sme biti null.
+     * </p>
      *
      * @param program novi program aktivnosti
+     * @throws NullPointerException ukoliko je program null
      */
     public void setProgram(ProgramAktivnosti program) {
+        if (program == null)
+            throw new NullPointerException("Program aktivnosti ne sme biti null");
         this.program = program;
     }
 
@@ -167,10 +191,6 @@ public class StavkaUpisa implements ApstraktniDomenskiObjekat {
 
     /**
      * Kreira listu stavki upisa na osnovu rezultata SQL upita.
-     * <p>
-     * Za svaki red kreira se objekat {@link StavkaUpisa} sa referencama
-     * na {@link UpisNaProgram} i {@link ProgramAktivnosti} po njihovim ID-jevima.
-     * </p>
      *
      * @param rs rezultat SQL upita koji sadrži podatke o stavkama
      * @return lista stavki upisa
@@ -216,7 +236,6 @@ public class StavkaUpisa implements ApstraktniDomenskiObjekat {
 
     /**
      * Vraća uslov primarnog ključa za SQL WHERE klauzulu.
-     * Stavka se identifikuje kombinacijom rednog broja i ID-ja upisa.
      *
      * @return string u formatu "stavka_upisa.id=X AND stavka_upisa.upis=Y"
      */
@@ -228,8 +247,6 @@ public class StavkaUpisa implements ApstraktniDomenskiObjekat {
     /**
      * Nije podržano za ovu klasu.
      *
-     * @param rs rezultat SQL upita
-     * @return nikad se ne vraća
      * @throws UnsupportedOperationException uvek
      */
     @Override
@@ -240,7 +257,6 @@ public class StavkaUpisa implements ApstraktniDomenskiObjekat {
     /**
      * Nije podržano za ovu klasu — stavke upisa se ne menjaju, samo brišu i ponovo dodaju.
      *
-     * @return nikad se ne vraća
      * @throws UnsupportedOperationException uvek
      */
     @Override

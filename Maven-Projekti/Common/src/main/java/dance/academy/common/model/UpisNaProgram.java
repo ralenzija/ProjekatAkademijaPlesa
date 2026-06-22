@@ -25,7 +25,7 @@ public class UpisNaProgram implements ApstraktniDomenskiObjekat {
     /** Datum kada je upis kreiran. */
     private Date datum;
 
-    /** Trenutni status upisa (npr. AKTIVAN, OTKAZAN, ZAVRSЕН). */
+    /** Trenutni status upisa (npr. AKTIVAN, OTKAZAN, ZAVRSEN). */
     private StatusUpisa status;
 
     /** Ukupan iznos koji učesnik treba da plati za sve stavke upisa. */
@@ -48,45 +48,47 @@ public class UpisNaProgram implements ApstraktniDomenskiObjekat {
 
     /**
      * Konstruktor koji inicijalizuje upis sa svim podacima uključujući stavke.
+     * Poziva odgovarajuće setter metode radi validacije vrednosti.
      *
-     * @param id           jedinstveni identifikator upisa
-     * @param datum        datum kreiranja upisa
-     * @param status       status upisa
-     * @param ukupanIznos  ukupan iznos za plaćanje
-     * @param instruktor   instruktor koji vodi programe
-     * @param ucesnik      učesnik koji se upisuje
-     * @param stavke       lista stavki upisa
+     * @param id          jedinstveni identifikator upisa
+     * @param datum       datum kreiranja upisa
+     * @param status      status upisa
+     * @param ukupanIznos ukupan iznos za plaćanje
+     * @param instruktor  instruktor koji vodi programe
+     * @param ucesnik     učesnik koji se upisuje
+     * @param stavke      lista stavki upisa
      */
     public UpisNaProgram(int id, Date datum, StatusUpisa status, double ukupanIznos,
-                         Instruktor instruktor, Ucesnik ucesnik, List<StavkaUpisa> stavke) {
-        this.id = id;
-        this.datum = datum;
-        this.status = status;
-        this.ukupanIznos = ukupanIznos;
-        this.instruktor = instruktor;
-        this.ucesnik = ucesnik;
+            Instruktor instruktor, Ucesnik ucesnik, List<StavkaUpisa> stavke) {
+        setId(id);
+        setDatum(datum);
+        setStatus(status);
+        setUkupanIznos(ukupanIznos);
+        setInstruktor(instruktor);
+        setUcesnik(ucesnik);
         this.stavke = stavke;
     }
 
     /**
      * Konstruktor koji inicijalizuje upis bez stavki.
      * Stavke se mogu naknadno dodati metodom {@link #setStavke(List)}.
+     * Poziva odgovarajuće setter metode radi validacije vrednosti.
      *
-     * @param id           jedinstveni identifikator upisa
-     * @param datum        datum kreiranja upisa
-     * @param status       status upisa
-     * @param ukupanIznos  ukupan iznos za plaćanje
-     * @param instruktor   instruktor koji vodi programe
-     * @param ucesnik      učesnik koji se upisuje
+     * @param id          jedinstveni identifikator upisa
+     * @param datum       datum kreiranja upisa
+     * @param status      status upisa
+     * @param ukupanIznos ukupan iznos za plaćanje
+     * @param instruktor  instruktor koji vodi programe
+     * @param ucesnik     učesnik koji se upisuje
      */
     public UpisNaProgram(int id, Date datum, StatusUpisa status, double ukupanIznos,
-                         Instruktor instruktor, Ucesnik ucesnik) {
-        this.id = id;
-        this.datum = datum;
-        this.status = status;
-        this.ukupanIznos = ukupanIznos;
-        this.instruktor = instruktor;
-        this.ucesnik = ucesnik;
+            Instruktor instruktor, Ucesnik ucesnik) {
+        setId(id);
+        setDatum(datum);
+        setStatus(status);
+        setUkupanIznos(ukupanIznos);
+        setInstruktor(instruktor);
+        setUcesnik(ucesnik);
     }
 
     /**
@@ -118,10 +120,17 @@ public class UpisNaProgram implements ApstraktniDomenskiObjekat {
 
     /**
      * Postavlja jedinstveni identifikator upisa.
+     * <p>
+     * ID mora biti veći ili jednak nuli, ili -1 kao privremena vrednost
+     * pre upisa u bazu podataka.
+     * </p>
      *
      * @param id novi identifikator
+     * @throws IllegalArgumentException ukoliko je id manji od -1
      */
     public void setId(int id) {
+        if (id < -1)
+            throw new IllegalArgumentException("ID ne sme biti manji od -1");
         this.id = id;
     }
 
@@ -136,10 +145,16 @@ public class UpisNaProgram implements ApstraktniDomenskiObjekat {
 
     /**
      * Postavlja datum kreiranja upisa.
+     * <p>
+     * Datum ne sme biti null.
+     * </p>
      *
      * @param datum novi datum
+     * @throws NullPointerException ukoliko je datum null
      */
     public void setDatum(Date datum) {
+        if (datum == null)
+            throw new NullPointerException("Datum ne sme biti null");
         this.datum = datum;
     }
 
@@ -154,10 +169,16 @@ public class UpisNaProgram implements ApstraktniDomenskiObjekat {
 
     /**
      * Postavlja status upisa.
+     * <p>
+     * Status ne sme biti null.
+     * </p>
      *
      * @param status novi status
+     * @throws NullPointerException ukoliko je status null
      */
     public void setStatus(StatusUpisa status) {
+        if (status == null)
+            throw new NullPointerException("Status ne sme biti null");
         this.status = status;
     }
 
@@ -172,10 +193,16 @@ public class UpisNaProgram implements ApstraktniDomenskiObjekat {
 
     /**
      * Postavlja ukupan iznos koji učesnik treba da plati.
+     * <p>
+     * Ukupan iznos ne sme biti negativan.
+     * </p>
      *
      * @param ukupanIznos novi ukupan iznos
+     * @throws IllegalArgumentException ukoliko je iznos negativan
      */
     public void setUkupanIznos(double ukupanIznos) {
+        if (ukupanIznos < 0)
+            throw new IllegalArgumentException("Ukupan iznos ne sme biti negativan");
         this.ukupanIznos = ukupanIznos;
     }
 
@@ -190,10 +217,16 @@ public class UpisNaProgram implements ApstraktniDomenskiObjekat {
 
     /**
      * Postavlja instruktora koji vodi programe u ovom upisu.
+     * <p>
+     * Instruktor ne sme biti null.
+     * </p>
      *
      * @param instruktor novi instruktor
+     * @throws NullPointerException ukoliko je instruktor null
      */
     public void setInstruktor(Instruktor instruktor) {
+        if (instruktor == null)
+            throw new NullPointerException("Instruktor ne sme biti null");
         this.instruktor = instruktor;
     }
 
@@ -208,10 +241,16 @@ public class UpisNaProgram implements ApstraktniDomenskiObjekat {
 
     /**
      * Postavlja učesnika koji je kreirao upis.
+     * <p>
+     * Učesnik ne sme biti null.
+     * </p>
      *
      * @param ucesnik novi učesnik
+     * @throws NullPointerException ukoliko je učesnik null
      */
     public void setUcesnik(Ucesnik ucesnik) {
+        if (ucesnik == null)
+            throw new NullPointerException("Ucesnik ne sme biti null");
         this.ucesnik = ucesnik;
     }
 
@@ -260,11 +299,6 @@ public class UpisNaProgram implements ApstraktniDomenskiObjekat {
 
     /**
      * Kreira listu upisa na osnovu rezultata SQL upita.
-     * <p>
-     * Za svaki red u {@link ResultSet}-u kreira se objekat {@link UpisNaProgram}
-     * zajedno sa povezanim instruktorom, učesnikom i stavkama upisa.
-     * Stavke se učitavaju dodatnim upitom ka tabeli {@code stavka_upisa}.
-     * </p>
      *
      * @param rs rezultat SQL upita koji sadrži podatke o upisima
      * @return lista upisa iz baze podataka
@@ -289,7 +323,14 @@ public class UpisNaProgram implements ApstraktniDomenskiObjekat {
             java.sql.Date dRodj = rs.getDate("ucesnik.datum_rodjenja");
             java.time.LocalDate datumRodjU = (dRodj != null) ? dRodj.toLocalDate() : null;
             String napomenaU = rs.getString("ucesnik.napomena");
-            Ucesnik p = new Ucesnik(idU, imeU, prezimeU, emailU, null, telefonU, datumRodjU, napomenaU);
+            Ucesnik p = new Ucesnik();
+            p.setId(idU);
+            p.setIme(imeU);
+            p.setPrezime(prezimeU);
+            p.setEmail(emailU);
+            p.setTelefon(telefonU);
+            if (datumRodjU != null) p.setDatumRodjenja(datumRodjU);
+            p.setNapomena(napomenaU);
 
             int idUp = rs.getInt("upis_na_program.id");
             java.sql.Date datumSQL = rs.getDate("upis_na_program.datum");
@@ -304,7 +345,7 @@ public class UpisNaProgram implements ApstraktniDomenskiObjekat {
                     "WHERE upis=" + idUp;
             List<StavkaUpisa> sveStavke = new ArrayList<>();
             try (Statement st = rs.getStatement().getConnection().createStatement();
-                 ResultSet rsStavke = st.executeQuery(upitStavke)) {
+                    ResultSet rsStavke = st.executeQuery(upitStavke)) {
                 while (rsStavke.next()) {
                     int idStavka = rsStavke.getInt("stavka_upisa.id");
                     double iznos = rsStavke.getDouble("stavka_upisa.iznos");
@@ -368,8 +409,6 @@ public class UpisNaProgram implements ApstraktniDomenskiObjekat {
     /**
      * Nije podržano za ovu klasu.
      *
-     * @param rs rezultat SQL upita
-     * @return nikad se ne vraća
      * @throws UnsupportedOperationException uvek
      */
     @Override

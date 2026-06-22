@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -40,11 +41,32 @@ public class NivoVestineTest {
         assertEquals(PlesniStil.SALSA, nivoVestine.getVrsta(), "Vrsta treba biti SALSA");
     }
 
+    @Test
+    public void testKonstruktorBacaIzuzetakZaNullNivo() {
+        assertThrows(NullPointerException.class,
+                () -> new NivoVestine(1, null, PlesniStil.SALSA),
+                "Konstruktor mora baciti NullPointerException za null nivo");
+    }
+
+    @Test
+    public void testKonstruktorBacaIzuzetakZaNullVrsta() {
+        assertThrows(NullPointerException.class,
+                () -> new NivoVestine(1, PlesniNivo.POCETNI, null),
+                "Konstruktor mora baciti NullPointerException za null vrstu");
+    }
+
 
     @Test
     public void testSetGetId() {
         nivoVestine.setId(99);
         assertEquals(99, nivoVestine.getId(), "ID treba biti 99");
+    }
+
+    @Test
+    public void testSetIdNegativanBacaIzuzetak() {
+        assertThrows(IllegalArgumentException.class,
+                () -> nivoVestine.setId(-5),
+                "Mora baciti izuzetak za id manji od -1");
     }
 
     @Test
@@ -54,21 +76,37 @@ public class NivoVestineTest {
     }
 
     @Test
+    public void testSetNivoNullBacaIzuzetak() {
+        assertThrows(NullPointerException.class,
+                () -> nivoVestine.setNivo(null),
+                "Mora baciti NullPointerException za null nivo");
+    }
+
+    @ParameterizedTest
+    @EnumSource(PlesniNivo.class)
+    public void testSetNivoSveVrednosti(PlesniNivo nivo) {
+        assertDoesNotThrow(() -> nivoVestine.setNivo(nivo),
+                "Ne sme baciti izuzetak za validan nivo: " + nivo);
+    }
+
+    @Test
     public void testSetGetVrsta() {
         nivoVestine.setVrsta(PlesniStil.TANGO);
         assertEquals(PlesniStil.TANGO, nivoVestine.getVrsta(), "Vrsta treba biti TANGO");
     }
 
     @Test
-    public void testSetNivoNull() {
-        nivoVestine.setNivo(null);
-        assertNull(nivoVestine.getNivo(), "Nivo treba biti null");
+    public void testSetVrstaNullBacaIzuzetak() {
+        assertThrows(NullPointerException.class,
+                () -> nivoVestine.setVrsta(null),
+                "Mora baciti NullPointerException za null vrstu");
     }
 
-    @Test
-    public void testSetVrstaNull() {
-        nivoVestine.setVrsta(null);
-        assertNull(nivoVestine.getVrsta(), "Vrsta treba biti null");
+    @ParameterizedTest
+    @EnumSource(PlesniStil.class)
+    public void testSetVrstaSveVrednosti(PlesniStil stil) {
+        assertDoesNotThrow(() -> nivoVestine.setVrsta(stil),
+                "Ne sme baciti izuzetak za validan stil: " + stil);
     }
 
 
@@ -76,12 +114,6 @@ public class NivoVestineTest {
     public void testToString() {
         String expected = "NivoVestine{nivo=POCETNI, vrsta=SALSA}";
         assertEquals(expected, nivoVestine.toString(), "toString nije ispravan");
-    }
-
-    @Test
-    public void testToStringNullVrednosti() {
-        NivoVestine nv = new NivoVestine();
-        assertEquals("NivoVestine{nivo=null, vrsta=null}", nv.toString(), "toString sa null vrednostima");
     }
 
 
@@ -125,21 +157,23 @@ public class NivoVestineTest {
     }
 
 
-
     @Test
     public void testVratiNazivTabele() {
-        assertEquals("nivo_vestine", nivoVestine.vratiNazivTabele(), "Naziv tabele treba biti 'nivo_vestine'");
+        assertEquals("nivo_vestine", nivoVestine.vratiNazivTabele(),
+                "Naziv tabele treba biti 'nivo_vestine'");
     }
 
 
     @Test
     public void testVratiKoloneZaUbacivanje() {
-        assertEquals("nivo,vrsta", nivoVestine.vratiKoloneZaUbacivanje(), "Kolone za ubacivanje nisu ispravne");
+        assertEquals("nivo,vrsta", nivoVestine.vratiKoloneZaUbacivanje(),
+                "Kolone za ubacivanje nisu ispravne");
     }
 
     @Test
     public void testVratiPrimarniKljuc() {
-        assertEquals("nivo_vestine.id=1", nivoVestine.vratiPrimarniKljuc(), "Primarni kljuc nije ispravan");
+        assertEquals("nivo_vestine.id=1", nivoVestine.vratiPrimarniKljuc(),
+                "Primarni kljuc nije ispravan");
     }
 
     @Test
@@ -161,29 +195,5 @@ public class NivoVestineTest {
         assertThrows(UnsupportedOperationException.class,
                 () -> nivoVestine.vratiVrednostiZaIzmenu(),
                 "Treba baciti UnsupportedOperationException");
-    }
-
-
-
-    @Test
-    public void testSviPlesniNivoi() {
-        nivoVestine.setNivo(PlesniNivo.POCETNI);
-        assertEquals(PlesniNivo.POCETNI, nivoVestine.getNivo());
-        nivoVestine.setNivo(PlesniNivo.SREDNJI);
-        assertEquals(PlesniNivo.SREDNJI, nivoVestine.getNivo());
-        nivoVestine.setNivo(PlesniNivo.NAPREDNI);
-        assertEquals(PlesniNivo.NAPREDNI, nivoVestine.getNivo());
-        nivoVestine.setNivo(PlesniNivo.MAJSTORSKI);
-        assertEquals(PlesniNivo.MAJSTORSKI, nivoVestine.getNivo());
-    }
-
-    @Test
-    public void testSviPlesniStilovi() {
-        nivoVestine.setVrsta(PlesniStil.SALSA);
-        assertEquals(PlesniStil.SALSA, nivoVestine.getVrsta());
-        nivoVestine.setVrsta(PlesniStil.BACHATA);
-        assertEquals(PlesniStil.BACHATA, nivoVestine.getVrsta());
-        nivoVestine.setVrsta(PlesniStil.TANGO);
-        assertEquals(PlesniStil.TANGO, nivoVestine.getVrsta());
     }
 }

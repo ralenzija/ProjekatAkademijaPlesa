@@ -5,9 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 /**
  * Predstavlja instruktora plesne akademije.
@@ -18,20 +16,17 @@ import lombok.AllArgsConstructor;
  * stilove plesa koji su evidentirani kroz {@link InstruktorSertifikat}.
  * </p>
  * <p>
- * Lombok anotacije {@code @Getter}, {@code @Setter}, {@code @NoArgsConstructor}
- * i {@code @AllArgsConstructor} automatski generišu get/set metode i
- * konstruktore u toku kompajliranja, eliminišući boilerplate kod.
- * Metode {@code toString}, {@code equals} i {@code hashCode} su eksplicitno
- * napisane jer sadrže specifičnu poslovnu logiku.
+ * Lombok anotacija {@code @Getter} automatski generiše get metode u toku
+ * kompajliranja. Setter metode su eksplicitno napisane jer sadrže validaciju
+ * vrednosti atributa. Metode {@code toString}, {@code equals} i {@code hashCode}
+ * su eksplicitno napisane jer sadrže specifičnu poslovnu logiku.
  * </p>
  *
  * @author Rastko
  * @version 1.0
  */
 @Getter
-@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Instruktor implements ApstraktniDomenskiObjekat {
 
     /** Jedinstveni identifikator instruktora u bazi podataka. */
@@ -48,6 +43,112 @@ public class Instruktor implements ApstraktniDomenskiObjekat {
 
     /** Šifra instruktora za prijavu na sistem. */
     private String sifra;
+
+    /**
+     * Konstruktor koji inicijalizuje instruktora sa svim podacima.
+     * Poziva odgovarajuće setter metode radi validacije vrednosti.
+     *
+     * @param id      jedinstveni identifikator instruktora
+     * @param ime     ime instruktora
+     * @param prezime prezime instruktora
+     * @param email   email adresa za prijavu
+     * @param sifra   šifra za prijavu
+     */
+    public Instruktor(int id, String ime, String prezime, String email, String sifra) {
+        setId(id);
+        setIme(ime);
+        setPrezime(prezime);
+        setEmail(email);
+        setSifra(sifra);
+    }
+
+    /**
+     * Postavlja jedinstveni identifikator instruktora.
+     * <p>
+     * ID mora biti veći ili jednak nuli, ili -1 kao privremena vrednost
+     * pre upisa u bazu podataka.
+     * </p>
+     *
+     * @param id novi identifikator instruktora
+     * @throws IllegalArgumentException ukoliko je id manji od -1
+     */
+    public void setId(int id) {
+        if (id < -1)
+            throw new IllegalArgumentException("ID ne sme biti manji od -1");
+        this.id = id;
+    }
+
+    /**
+     * Postavlja ime instruktora.
+     * <p>
+     * Ime ne sme biti null niti prazan string.
+     * </p>
+     *
+     * @param ime novo ime instruktora
+     * @throws NullPointerException     ukoliko je ime null
+     * @throws IllegalArgumentException ukoliko je ime prazan string
+     */
+    public void setIme(String ime) {
+        if (ime == null)
+            throw new NullPointerException("Ime ne sme biti null");
+        if (ime.isEmpty())
+            throw new IllegalArgumentException("Ime ne sme biti prazno");
+        this.ime = ime;
+    }
+
+    /**
+     * Postavlja prezime instruktora.
+     * <p>
+     * Prezime ne sme biti null niti prazan string.
+     * </p>
+     *
+     * @param prezime novo prezime instruktora
+     * @throws NullPointerException     ukoliko je prezime null
+     * @throws IllegalArgumentException ukoliko je prezime prazan string
+     */
+    public void setPrezime(String prezime) {
+        if (prezime == null)
+            throw new NullPointerException("Prezime ne sme biti null");
+        if (prezime.isEmpty())
+            throw new IllegalArgumentException("Prezime ne sme biti prazno");
+        this.prezime = prezime;
+    }
+
+    /**
+     * Postavlja email adresu instruktora.
+     * <p>
+     * Email ne sme biti null niti prazan string.
+     * </p>
+     *
+     * @param email nova email adresa instruktora
+     * @throws NullPointerException     ukoliko je email null
+     * @throws IllegalArgumentException ukoliko je email prazan string
+     */
+    public void setEmail(String email) {
+        if (email == null)
+            throw new NullPointerException("Email ne sme biti null");
+        if (email.isEmpty())
+            throw new IllegalArgumentException("Email ne sme biti prazan");
+        this.email = email;
+    }
+
+    /**
+     * Postavlja šifru instruktora.
+     * <p>
+     * Šifra ne sme biti null niti prazan string.
+     * </p>
+     *
+     * @param sifra nova šifra instruktora
+     * @throws NullPointerException     ukoliko je šifra null
+     * @throws IllegalArgumentException ukoliko je šifra prazan string
+     */
+    public void setSifra(String sifra) {
+        if (sifra == null)
+            throw new NullPointerException("Sifra ne sme biti null");
+        if (sifra.isEmpty())
+            throw new IllegalArgumentException("Sifra ne sme biti prazna");
+        this.sifra = sifra;
+    }
 
     /**
      * Vraća tekstualni prikaz instruktora u formatu "Ime Prezime".

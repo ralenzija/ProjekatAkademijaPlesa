@@ -61,6 +61,7 @@ public class ProgramAktivnosti implements ApstraktniDomenskiObjekat {
 
     /**
      * Konstruktor koji inicijalizuje program aktivnosti sa svim podacima.
+     * Poziva odgovarajuće setter metode radi validacije vrednosti.
      *
      * @param id           jedinstveni identifikator programa
      * @param naziv        naziv programa
@@ -77,17 +78,17 @@ public class ProgramAktivnosti implements ApstraktniDomenskiObjekat {
     public ProgramAktivnosti(int id, String naziv, int trajanje, double cena, PlesniStil vrsta,
             boolean aktivan, String sala, LocalDate datumPocetka, LocalTime termin,
             int maxUcesnika, String napomena) {
-        this.id = id;
-        this.naziv = naziv;
-        this.trajanje = trajanje;
-        this.cena = cena;
-        this.vrsta = vrsta;
-        this.aktivan = aktivan;
-        this.sala = sala;
-        this.datumPocetka = datumPocetka;
-        this.termin = termin;
-        this.maxUcesnika = maxUcesnika;
-        this.napomena = napomena;
+        setId(id);
+        setNaziv(naziv);
+        setTrajanje(trajanje);
+        setCena(cena);
+        setVrsta(vrsta);
+        setAktivan(aktivan);
+        setSala(sala);
+        setDatumPocetka(datumPocetka);
+        setTermin(termin);
+        setMaxUcesnika(maxUcesnika);
+        setNapomena(napomena);
     }
 
     /**
@@ -95,154 +96,263 @@ public class ProgramAktivnosti implements ApstraktniDomenskiObjekat {
      *
      * @return id programa
      */
-    public int getId() { return id; }
+    public int getId() {
+        return id;
+    }
 
     /**
      * Postavlja jedinstveni identifikator programa.
+     * <p>
+     * ID mora biti veći ili jednak nuli, ili -1 kao privremena vrednost
+     * pre upisa u bazu podataka.
+     * </p>
      *
      * @param id novi identifikator
+     * @throws IllegalArgumentException ukoliko je id manji od -1
      */
-    public void setId(int id) { this.id = id; }
+    public void setId(int id) {
+        if (id < -1)
+            throw new IllegalArgumentException("ID ne sme biti manji od -1");
+        this.id = id;
+    }
 
     /**
      * Vraća naziv programa aktivnosti.
      *
      * @return naziv programa
      */
-    public String getNaziv() { return naziv; }
+    public String getNaziv() {
+        return naziv;
+    }
 
     /**
      * Postavlja naziv programa aktivnosti.
+     * <p>
+     * Naziv ne sme biti null niti prazan string.
+     * </p>
      *
      * @param naziv novi naziv
+     * @throws NullPointerException     ukoliko je naziv null
+     * @throws IllegalArgumentException ukoliko je naziv prazan string
      */
-    public void setNaziv(String naziv) { this.naziv = naziv; }
+    public void setNaziv(String naziv) {
+        if (naziv == null)
+            throw new NullPointerException("Naziv ne sme biti null");
+        if (naziv.isEmpty())
+            throw new IllegalArgumentException("Naziv ne sme biti prazan");
+        this.naziv = naziv;
+    }
 
     /**
      * Vraća trajanje programa u nedeljama.
      *
      * @return trajanje u nedeljama
      */
-    public int getTrajanje() { return trajanje; }
+    public int getTrajanje() {
+        return trajanje;
+    }
 
     /**
      * Postavlja trajanje programa u nedeljama.
+     * <p>
+     * Trajanje mora biti pozitivan broj.
+     * </p>
      *
      * @param trajanje novo trajanje
+     * @throws IllegalArgumentException ukoliko je trajanje manje ili jednako nuli
      */
-    public void setTrajanje(int trajanje) { this.trajanje = trajanje; }
+    public void setTrajanje(int trajanje) {
+        if (trajanje <= 0)
+            throw new IllegalArgumentException("Trajanje mora biti pozitivan broj");
+        this.trajanje = trajanje;
+    }
 
     /**
      * Vraća cenu programa u dinarima.
      *
      * @return cena programa
      */
-    public double getCena() { return cena; }
+    public double getCena() {
+        return cena;
+    }
 
     /**
      * Postavlja cenu programa u dinarima.
+     * <p>
+     * Cena ne sme biti negativna vrednost.
+     * </p>
      *
      * @param cena nova cena
+     * @throws IllegalArgumentException ukoliko je cena negativna
      */
-    public void setCena(double cena) { this.cena = cena; }
+    public void setCena(double cena) {
+        if (cena < 0)
+            throw new IllegalArgumentException("Cena ne sme biti negativna");
+        this.cena = cena;
+    }
 
     /**
      * Vraća stil plesa koji se uči na ovom programu.
      *
      * @return stil plesa
      */
-    public PlesniStil getVrsta() { return vrsta; }
+    public PlesniStil getVrsta() {
+        return vrsta;
+    }
 
     /**
      * Postavlja stil plesa koji se uči na ovom programu.
+     * <p>
+     * Stil plesa ne sme biti null.
+     * </p>
      *
      * @param vrsta novi stil plesa
+     * @throws NullPointerException ukoliko je vrsta null
      */
-    public void setVrsta(PlesniStil vrsta) { this.vrsta = vrsta; }
+    public void setVrsta(PlesniStil vrsta) {
+        if (vrsta == null)
+            throw new NullPointerException("Stil plesa ne sme biti null");
+        this.vrsta = vrsta;
+    }
 
     /**
      * Vraća da li je program trenutno aktivan.
      *
      * @return {@code true} ako je program aktivan, {@code false} inače
      */
-    public boolean isAktivan() { return aktivan; }
+    public boolean isAktivan() {
+        return aktivan;
+    }
 
     /**
      * Postavlja status aktivnosti programa.
      *
      * @param aktivan {@code true} ako je program aktivan
      */
-    public void setAktivan(boolean aktivan) { this.aktivan = aktivan; }
+    public void setAktivan(boolean aktivan) {
+        this.aktivan = aktivan;
+    }
 
     /**
      * Vraća oznaku sale u kojoj se program održava.
      *
      * @return oznaka sale
      */
-    public String getSala() { return sala; }
+    public String getSala() {
+        return sala;
+    }
 
     /**
      * Postavlja oznaku sale u kojoj se program održava.
+     * <p>
+     * Oznaka sale ne sme biti null niti prazan string.
+     * </p>
      *
      * @param sala nova oznaka sale
+     * @throws NullPointerException     ukoliko je sala null
+     * @throws IllegalArgumentException ukoliko je sala prazan string
      */
-    public void setSala(String sala) { this.sala = sala; }
+    public void setSala(String sala) {
+        if (sala == null)
+            throw new NullPointerException("Sala ne sme biti null");
+        if (sala.isEmpty())
+            throw new IllegalArgumentException("Sala ne sme biti prazna");
+        this.sala = sala;
+    }
 
     /**
      * Vraća datum početka programa.
      *
      * @return datum početka
      */
-    public LocalDate getDatumPocetka() { return datumPocetka; }
+    public LocalDate getDatumPocetka() {
+        return datumPocetka;
+    }
 
     /**
      * Postavlja datum početka programa.
+     * <p>
+     * Datum početka ne sme biti null.
+     * </p>
      *
      * @param datumPocetka novi datum početka
+     * @throws NullPointerException ukoliko je datum null
      */
-    public void setDatumPocetka(LocalDate datumPocetka) { this.datumPocetka = datumPocetka; }
+    public void setDatumPocetka(LocalDate datumPocetka) {
+        if (datumPocetka == null)
+            throw new NullPointerException("Datum pocetka ne sme biti null");
+        this.datumPocetka = datumPocetka;
+    }
 
     /**
      * Vraća vreme termina kada se program održava.
      *
      * @return vreme termina
      */
-    public LocalTime getTermin() { return termin; }
+    public LocalTime getTermin() {
+        return termin;
+    }
 
     /**
      * Postavlja vreme termina kada se program održava.
+     * <p>
+     * Termin ne sme biti null.
+     * </p>
      *
      * @param termin novo vreme termina
+     * @throws NullPointerException ukoliko je termin null
      */
-    public void setTermin(LocalTime termin) { this.termin = termin; }
+    public void setTermin(LocalTime termin) {
+        if (termin == null)
+            throw new NullPointerException("Termin ne sme biti null");
+        this.termin = termin;
+    }
 
     /**
      * Vraća maksimalan broj učesnika na programu.
      *
      * @return maksimalan broj učesnika
      */
-    public int getMaxUcesnika() { return maxUcesnika; }
+    public int getMaxUcesnika() {
+        return maxUcesnika;
+    }
 
     /**
      * Postavlja maksimalan broj učesnika na programu.
+     * <p>
+     * Maksimalan broj učesnika mora biti pozitivan broj.
+     * </p>
      *
      * @param maxUcesnika novi maksimalan broj
+     * @throws IllegalArgumentException ukoliko je broj manji ili jednak nuli
      */
-    public void setMaxUcesnika(int maxUcesnika) { this.maxUcesnika = maxUcesnika; }
+    public void setMaxUcesnika(int maxUcesnika) {
+        if (maxUcesnika <= 0)
+            throw new IllegalArgumentException("Maksimalan broj ucesnika mora biti pozitivan");
+        this.maxUcesnika = maxUcesnika;
+    }
 
     /**
      * Vraća dodatne napomene o programu.
      *
      * @return napomena
      */
-    public String getNapomena() { return napomena; }
+    public String getNapomena() {
+        return napomena;
+    }
 
     /**
      * Postavlja dodatne napomene o programu.
+     * <p>
+     * Napomena može biti null ili prazan string ukoliko
+     * nema posebnih napomena o programu.
+     * </p>
      *
      * @param napomena nova napomena
      */
-    public void setNapomena(String napomena) { this.napomena = napomena; }
+    public void setNapomena(String napomena) {
+        this.napomena = napomena;
+    }
 
     /**
      * Vraća naziv programa kao tekstualni prikaz.
@@ -250,7 +360,9 @@ public class ProgramAktivnosti implements ApstraktniDomenskiObjekat {
      * @return naziv programa
      */
     @Override
-    public String toString() { return naziv; }
+    public String toString() {
+        return naziv;
+    }
 
     @Override
     public int hashCode() {
@@ -279,14 +391,12 @@ public class ProgramAktivnosti implements ApstraktniDomenskiObjekat {
      * @return naziv tabele "program_aktivnosti"
      */
     @Override
-    public String vratiNazivTabele() { return "program_aktivnosti"; }
+    public String vratiNazivTabele() {
+        return "program_aktivnosti";
+    }
 
     /**
      * Kreira listu programa aktivnosti na osnovu rezultata SQL upita.
-     * <p>
-     * Za svaki red u {@link ResultSet}-u kreira se objekat {@link ProgramAktivnosti}
-     * sa svim atributima, uključujući konverziju SQL datuma i vremena u Java tipove.
-     * </p>
      *
      * @param rs rezultat SQL upita koji sadrži podatke o programima
      * @return lista programa aktivnosti
@@ -330,7 +440,6 @@ public class ProgramAktivnosti implements ApstraktniDomenskiObjekat {
     /**
      * Nije podržano za ovu klasu.
      *
-     * @return nikad se ne vraća
      * @throws UnsupportedOperationException uvek
      */
     @Override
@@ -344,13 +453,13 @@ public class ProgramAktivnosti implements ApstraktniDomenskiObjekat {
      * @return string u formatu "program_aktivnosti.id=X"
      */
     @Override
-    public String vratiPrimarniKljuc() { return "program_aktivnosti.id=" + id; }
+    public String vratiPrimarniKljuc() {
+        return "program_aktivnosti.id=" + id;
+    }
 
     /**
      * Nije podržano za ovu klasu.
      *
-     * @param rs rezultat SQL upita
-     * @return nikad se ne vraća
      * @throws UnsupportedOperationException uvek
      */
     @Override
@@ -361,7 +470,6 @@ public class ProgramAktivnosti implements ApstraktniDomenskiObjekat {
     /**
      * Nije podržano za ovu klasu.
      *
-     * @return nikad se ne vraća
      * @throws UnsupportedOperationException uvek
      */
     @Override

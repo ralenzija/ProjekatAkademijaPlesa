@@ -1,4 +1,5 @@
 package dance.academy.common.model;
+
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,15 +36,16 @@ public class NivoVestine implements ApstraktniDomenskiObjekat {
 
     /**
      * Konstruktor koji inicijalizuje nivo veštine sa svim podacima.
+     * Poziva odgovarajuće setter metode radi validacije vrednosti.
      *
      * @param id    jedinstveni identifikator
      * @param nivo  nivo znanja učesnika
      * @param vrsta stil plesa
      */
     public NivoVestine(int id, PlesniNivo nivo, PlesniStil vrsta) {
-        this.id = id;
-        this.nivo = nivo;
-        this.vrsta = vrsta;
+        setId(id);
+        setNivo(nivo);
+        setVrsta(vrsta);
     }
 
     /**
@@ -51,42 +53,73 @@ public class NivoVestine implements ApstraktniDomenskiObjekat {
      *
      * @return id nivoa veštine
      */
-    public int getId() { return id; }
+    public int getId() {
+        return id;
+    }
 
     /**
      * Postavlja jedinstveni identifikator nivoa veštine.
+     * <p>
+     * ID mora biti veći ili jednak nuli, ili -1 kao privremena vrednost
+     * pre upisa u bazu podataka.
+     * </p>
      *
      * @param id novi identifikator
+     * @throws IllegalArgumentException ukoliko je id manji od -1
      */
-    public void setId(int id) { this.id = id; }
+    public void setId(int id) {
+        if (id < -1)
+            throw new IllegalArgumentException("ID ne sme biti manji od -1");
+        this.id = id;
+    }
 
     /**
      * Vraća nivo znanja učesnika.
      *
      * @return nivo znanja
      */
-    public PlesniNivo getNivo() { return nivo; }
+    public PlesniNivo getNivo() {
+        return nivo;
+    }
 
     /**
      * Postavlja nivo znanja učesnika.
+     * <p>
+     * Nivo znanja ne sme biti null.
+     * </p>
      *
      * @param nivo novi nivo znanja
+     * @throws NullPointerException ukoliko je nivo null
      */
-    public void setNivo(PlesniNivo nivo) { this.nivo = nivo; }
+    public void setNivo(PlesniNivo nivo) {
+        if (nivo == null)
+            throw new NullPointerException("Nivo znanja ne sme biti null");
+        this.nivo = nivo;
+    }
 
     /**
      * Vraća stil plesa na koji se nivo veštine odnosi.
      *
      * @return stil plesa
      */
-    public PlesniStil getVrsta() { return vrsta; }
+    public PlesniStil getVrsta() {
+        return vrsta;
+    }
 
     /**
      * Postavlja stil plesa na koji se nivo veštine odnosi.
+     * <p>
+     * Stil plesa ne sme biti null.
+     * </p>
      *
      * @param vrsta novi stil plesa
+     * @throws NullPointerException ukoliko je vrsta null
      */
-    public void setVrsta(PlesniStil vrsta) { this.vrsta = vrsta; }
+    public void setVrsta(PlesniStil vrsta) {
+        if (vrsta == null)
+            throw new NullPointerException("Stil plesa ne sme biti null");
+        this.vrsta = vrsta;
+    }
 
     /**
      * Vraća tekstualni prikaz nivoa veštine sa nivoom i stilom plesa.
@@ -125,14 +158,12 @@ public class NivoVestine implements ApstraktniDomenskiObjekat {
      * @return naziv tabele "nivo_vestine"
      */
     @Override
-    public String vratiNazivTabele() { return "nivo_vestine"; }
+    public String vratiNazivTabele() {
+        return "nivo_vestine";
+    }
 
     /**
      * Kreira listu nivoa veštine na osnovu rezultata SQL upita.
-     * <p>
-     * Za svaki red u {@link ResultSet}-u kreira se objekat {@link NivoVestine}
-     * sa odgovarajućim nivoom i stilom plesa, konvertovanim iz stringa u enum.
-     * </p>
      *
      * @param rs rezultat SQL upita koji sadrži podatke o nivoima veštine
      * @return lista nivoa veštine
@@ -157,12 +188,13 @@ public class NivoVestine implements ApstraktniDomenskiObjekat {
      * @return string sa nazivima kolona odvojenim zarezima
      */
     @Override
-    public String vratiKoloneZaUbacivanje() { return "nivo,vrsta"; }
+    public String vratiKoloneZaUbacivanje() {
+        return "nivo,vrsta";
+    }
 
     /**
      * Nije podržano za ovu klasu.
      *
-     * @return nikad se ne vraća
      * @throws UnsupportedOperationException uvek
      */
     @Override
@@ -176,13 +208,13 @@ public class NivoVestine implements ApstraktniDomenskiObjekat {
      * @return string u formatu "nivo_vestine.id=X"
      */
     @Override
-    public String vratiPrimarniKljuc() { return "nivo_vestine.id=" + id; }
+    public String vratiPrimarniKljuc() {
+        return "nivo_vestine.id=" + id;
+    }
 
     /**
      * Nije podržano za ovu klasu.
      *
-     * @param rs rezultat SQL upita
-     * @return nikad se ne vraća
      * @throws UnsupportedOperationException uvek
      */
     @Override
@@ -193,7 +225,6 @@ public class NivoVestine implements ApstraktniDomenskiObjekat {
     /**
      * Nije podržano za ovu klasu.
      *
-     * @return nikad se ne vraća
      * @throws UnsupportedOperationException uvek
      */
     @Override

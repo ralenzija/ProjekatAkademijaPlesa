@@ -1,4 +1,5 @@
 package dance.academy.common.model;
+
 import java.sql.ResultSet;
 import java.util.List;
 
@@ -32,15 +33,16 @@ public class Sertifikat implements ApstraktniDomenskiObjekat {
 
     /**
      * Konstruktor koji inicijalizuje sertifikat sa svim podacima.
+     * Poziva odgovarajuće setter metode radi validacije vrednosti.
      *
      * @param id           jedinstveni identifikator sertifikata
      * @param naziv        stil plesa na koji se sertifikat odnosi
      * @param organizacija naziv organizacije koja je izdala sertifikat
      */
     public Sertifikat(int id, PlesniStil naziv, String organizacija) {
-        this.id = id;
-        this.ples = naziv;
-        this.organizacija = organizacija;
+        setId(id);
+        setPles(naziv);
+        setOrganizacija(organizacija);
     }
 
     /**
@@ -54,20 +56,18 @@ public class Sertifikat implements ApstraktniDomenskiObjekat {
 
     /**
      * Postavlja jedinstveni identifikator sertifikata.
+     * <p>
+     * ID mora biti veći ili jednak nuli, ili -1 kao privremena vrednost
+     * pre upisa u bazu podataka.
+     * </p>
      *
      * @param id novi identifikator
+     * @throws IllegalArgumentException ukoliko je id manji od -1
      */
     public void setId(int id) {
+        if (id < -1)
+            throw new IllegalArgumentException("ID ne sme biti manji od -1");
         this.id = id;
-    }
-
-    /**
-     * Postavlja stil plesa na koji se sertifikat odnosi.
-     *
-     * @param ples novi stil plesa
-     */
-    public void setPles(PlesniStil ples) {
-        this.ples = ples;
     }
 
     /**
@@ -77,6 +77,21 @@ public class Sertifikat implements ApstraktniDomenskiObjekat {
      */
     public PlesniStil getPles() {
         return ples;
+    }
+
+    /**
+     * Postavlja stil plesa na koji se sertifikat odnosi.
+     * <p>
+     * Stil plesa ne sme biti null.
+     * </p>
+     *
+     * @param ples novi stil plesa
+     * @throws NullPointerException ukoliko je ples null
+     */
+    public void setPles(PlesniStil ples) {
+        if (ples == null)
+            throw new NullPointerException("Stil plesa ne sme biti null");
+        this.ples = ples;
     }
 
     /**
@@ -90,10 +105,19 @@ public class Sertifikat implements ApstraktniDomenskiObjekat {
 
     /**
      * Postavlja naziv organizacije koja je izdala sertifikat.
+     * <p>
+     * Naziv organizacije ne sme biti null niti prazan string.
+     * </p>
      *
      * @param organizacija naziv organizacije
+     * @throws NullPointerException     ukoliko je organizacija null
+     * @throws IllegalArgumentException ukoliko je organizacija prazan string
      */
     public void setOrganizacija(String organizacija) {
+        if (organizacija == null)
+            throw new NullPointerException("Organizacija ne sme biti null");
+        if (organizacija.isEmpty())
+            throw new IllegalArgumentException("Organizacija ne sme biti prazna");
         this.organizacija = organizacija;
     }
 
@@ -141,8 +165,6 @@ public class Sertifikat implements ApstraktniDomenskiObjekat {
     /**
      * Nije podržano za ovu klasu.
      *
-     * @param rs rezultat SQL upita
-     * @return nikad se ne vraća
      * @throws UnsupportedOperationException uvek
      */
     @Override
@@ -183,8 +205,6 @@ public class Sertifikat implements ApstraktniDomenskiObjekat {
     /**
      * Nije podržano za ovu klasu.
      *
-     * @param rs rezultat SQL upita
-     * @return nikad se ne vraća
      * @throws UnsupportedOperationException uvek
      */
     @Override
@@ -195,7 +215,6 @@ public class Sertifikat implements ApstraktniDomenskiObjekat {
     /**
      * Nije podržano za ovu klasu — sertifikati se ne menjaju, samo dodaju ili brišu.
      *
-     * @return nikad se ne vraća
      * @throws UnsupportedOperationException uvek
      */
     @Override

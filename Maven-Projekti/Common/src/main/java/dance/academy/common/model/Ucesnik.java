@@ -19,75 +19,60 @@ import java.util.Objects;
  */
 public class Ucesnik implements ApstraktniDomenskiObjekat {
 
-    /**
-     * Jedinstveni identifikator učesnika u bazi podataka.
-     */
+    /** Jedinstveni identifikator učesnika u bazi podataka. */
     private int id;
 
-    /**
-     * Ime učesnika.
-     */
+    /** Ime učesnika. */
     private String ime;
 
-    /**
-     * Prezime učesnika.
-     */
+    /** Prezime učesnika. */
     private String prezime;
 
-    /**
-     * Email adresa učesnika, koristi se i za identifikaciju.
-     */
+    /** Email adresa učesnika, koristi se i za identifikaciju. */
     private String email;
 
-    /**
-     * Nivo veštine učesnika u plesu, određuje u koje kurseve može da se upiše.
-     */
+    /** Nivo veštine učesnika u plesu, određuje u koje kurseve može da se upiše. */
     private NivoVestine nivo;
 
-    /**
-     * Kontakt telefon učesnika.
-     */
+    /** Kontakt telefon učesnika. */
     private String telefon;
 
-    /**
-     * Datum rođenja učesnika.
-     */
+    /** Datum rođenja učesnika. */
     private java.time.LocalDate datumRodjenja;
 
-    /**
-     * Dodatne napomene o učesniku (zdravstvena stanja, posebni zahtevi i sl.).
-     */
+    /** Dodatne napomene o učesniku (zdravstvena stanja, posebni zahtevi i sl.). */
     private String napomena;
 
     /**
-     * Podrazumevani konstruktor bez argumenata. Koristi se pri kreiranju
-     * praznog objekta pre popunjavanja podataka.
+     * Podrazumevani konstruktor bez argumenata.
+     * Koristi se pri kreiranju praznog objekta pre popunjavanja podataka.
      */
     public Ucesnik() {
     }
 
     /**
      * Konstruktor koji inicijalizuje učesnika sa svim potrebnim podacima.
+     * Poziva odgovarajuće setter metode radi validacije vrednosti.
      *
-     * @param id jedinstveni identifikator učesnika
-     * @param ime ime učesnika
-     * @param prezime prezime učesnika
-     * @param email email adresa učesnika
-     * @param nivo nivo veštine učesnika u plesu
-     * @param telefon kontakt telefon učesnika
-     * @param datumRodjenja datum rođenja učesnika
-     * @param napomena dodatne napomene o učesniku
+     * @param id             jedinstveni identifikator učesnika
+     * @param ime            ime učesnika
+     * @param prezime        prezime učesnika
+     * @param email          email adresa učesnika
+     * @param nivo           nivo veštine učesnika u plesu
+     * @param telefon        kontakt telefon učesnika
+     * @param datumRodjenja  datum rođenja učesnika
+     * @param napomena       dodatne napomene o učesniku
      */
     public Ucesnik(int id, String ime, String prezime, String email, NivoVestine nivo,
             String telefon, LocalDate datumRodjenja, String napomena) {
-        this.id = id;
-        this.ime = ime;
-        this.prezime = prezime;
-        this.email = email;
-        this.nivo = nivo;
-        this.telefon = telefon;
-        this.datumRodjenja = datumRodjenja;
-        this.napomena = napomena;
+        setId(id);
+        setIme(ime);
+        setPrezime(prezime);
+        setEmail(email);
+        setNivo(nivo);
+        setTelefon(telefon);
+        setDatumRodjenja(datumRodjenja);
+        setNapomena(napomena);
     }
 
     /**
@@ -101,10 +86,17 @@ public class Ucesnik implements ApstraktniDomenskiObjekat {
 
     /**
      * Postavlja jedinstveni identifikator učesnika.
+     * <p>
+     * ID mora biti veći ili jednak nuli, ili -1 kao privremena vrednost
+     * pre upisa u bazu podataka.
+     * </p>
      *
      * @param id novi identifikator učesnika
+     * @throws IllegalArgumentException ukoliko je id manji od -1
      */
     public void setId(int id) {
+        if (id < -1)
+            throw new IllegalArgumentException("ID ne sme biti manji od -1");
         this.id = id;
     }
 
@@ -119,10 +111,19 @@ public class Ucesnik implements ApstraktniDomenskiObjekat {
 
     /**
      * Postavlja ime učesnika.
+     * <p>
+     * Ime ne sme biti null niti prazan string.
+     * </p>
      *
      * @param ime novo ime učesnika
+     * @throws NullPointerException     ukoliko je ime null
+     * @throws IllegalArgumentException ukoliko je ime prazan string
      */
     public void setIme(String ime) {
+        if (ime == null)
+            throw new NullPointerException("Ime ne sme biti null");
+        if (ime.isEmpty())
+            throw new IllegalArgumentException("Ime ne sme biti prazno");
         this.ime = ime;
     }
 
@@ -137,10 +138,19 @@ public class Ucesnik implements ApstraktniDomenskiObjekat {
 
     /**
      * Postavlja prezime učesnika.
+     * <p>
+     * Prezime ne sme biti null niti prazan string.
+     * </p>
      *
      * @param prezime novo prezime učesnika
+     * @throws NullPointerException     ukoliko je prezime null
+     * @throws IllegalArgumentException ukoliko je prezime prazan string
      */
     public void setPrezime(String prezime) {
+        if (prezime == null)
+            throw new NullPointerException("Prezime ne sme biti null");
+        if (prezime.isEmpty())
+            throw new IllegalArgumentException("Prezime ne sme biti prazno");
         this.prezime = prezime;
     }
 
@@ -155,10 +165,19 @@ public class Ucesnik implements ApstraktniDomenskiObjekat {
 
     /**
      * Postavlja email adresu učesnika.
+     * <p>
+     * Email ne sme biti null niti prazan string.
+     * </p>
      *
      * @param email nova email adresa učesnika
+     * @throws NullPointerException     ukoliko je email null
+     * @throws IllegalArgumentException ukoliko je email prazan string
      */
     public void setEmail(String email) {
+        if (email == null)
+            throw new NullPointerException("Email ne sme biti null");
+        if (email.isEmpty())
+            throw new IllegalArgumentException("Email ne sme biti prazan");
         this.email = email;
     }
 
@@ -173,10 +192,16 @@ public class Ucesnik implements ApstraktniDomenskiObjekat {
 
     /**
      * Postavlja nivo veštine učesnika u plesu.
+     * <p>
+     * Nivo veštine ne sme biti null.
+     * </p>
      *
      * @param nivo novi nivo veštine
+     * @throws NullPointerException ukoliko je nivo null
      */
     public void setNivo(NivoVestine nivo) {
+        if (nivo == null)
+            throw new NullPointerException("Nivo vestine ne sme biti null");
         this.nivo = nivo;
     }
 
@@ -191,10 +216,18 @@ public class Ucesnik implements ApstraktniDomenskiObjekat {
 
     /**
      * Postavlja kontakt telefon učesnika.
+     * <p>
+     * Telefon može biti null ili prazan string ukoliko učesnik
+     * nije uneo broj telefona. Ako je unet, mora sadržati
+     * isključivo cifre.
+     * </p>
      *
      * @param telefon novi kontakt telefon
+     * @throws IllegalArgumentException ukoliko telefon sadrži znakove koji nisu cifre
      */
     public void setTelefon(String telefon) {
+        if (telefon != null && !telefon.isEmpty() && !telefon.matches("\\+?\\d+"))
+            throw new IllegalArgumentException("Telefon sme sadrzati samo cifre");
         this.telefon = telefon;
     }
 
@@ -209,10 +242,19 @@ public class Ucesnik implements ApstraktniDomenskiObjekat {
 
     /**
      * Postavlja datum rođenja učesnika.
+     * <p>
+     * Datum rođenja ne sme biti null niti u budućnosti.
+     * </p>
      *
      * @param datumRodjenja novi datum rođenja
+     * @throws NullPointerException     ukoliko je datum null
+     * @throws IllegalArgumentException ukoliko je datum u budućnosti
      */
     public void setDatumRodjenja(LocalDate datumRodjenja) {
+        if (datumRodjenja == null)
+            throw new NullPointerException("Datum rodjenja ne sme biti null");
+        if (datumRodjenja.isAfter(LocalDate.now()))
+            throw new IllegalArgumentException("Datum rodjenja ne moze biti u buducnosti");
         this.datumRodjenja = datumRodjenja;
     }
 
@@ -227,6 +269,10 @@ public class Ucesnik implements ApstraktniDomenskiObjekat {
 
     /**
      * Postavlja napomenu o učesniku.
+     * <p>
+     * Napomena može biti null ili prazan string ukoliko
+     * nema posebnih napomena o učesniku.
+     * </p>
      *
      * @param napomena nova napomena
      */
@@ -251,30 +297,20 @@ public class Ucesnik implements ApstraktniDomenskiObjekat {
     }
 
     /**
-     * Poredi dva učesnika po imenu, prezimenu i email adresi. Dva učesnika su
-     * jednaka ako im se poklapaju sva tri polja.
+     * Poredi dva učesnika po imenu, prezimenu i email adresi.
+     * Dva učesnika su jednaka ako im se poklapaju sva tri polja.
      *
      * @param obj objekat sa kojim se poredi
      * @return {@code true} ako su učesnici jednaki, {@code false} inače
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         final Ucesnik other = (Ucesnik) obj;
-        if (!Objects.equals(this.ime, other.ime)) {
-            return false;
-        }
-        if (!Objects.equals(this.prezime, other.prezime)) {
-            return false;
-        }
+        if (!Objects.equals(this.ime, other.ime)) return false;
+        if (!Objects.equals(this.prezime, other.prezime)) return false;
         return Objects.equals(this.email, other.email);
     }
 
@@ -290,10 +326,6 @@ public class Ucesnik implements ApstraktniDomenskiObjekat {
 
     /**
      * Kreira listu učesnika na osnovu rezultata SQL upita.
-     * <p>
-     * Za svaki red u {@link ResultSet}-u kreira se novi objekat {@link Ucesnik}
-     * i dodaje u listu. Datum rođenja se konvertuje iz SQL u Java tip.
-     * </p>
      *
      * @param rs rezultat SQL upita koji sadrži podatke o učesnicima
      * @return lista učesnika iz baze podataka
@@ -314,7 +346,15 @@ public class Ucesnik implements ApstraktniDomenskiObjekat {
             int nivoId = rs.getInt("nivo");
             NivoVestine nivo = new NivoVestine();
             nivo.setId(nivoId);
-            Ucesnik u = new Ucesnik(id, ime, prezime, email, nivo, telefon, datumRodjenja, napomena);
+            Ucesnik u = new Ucesnik();
+            u.setId(id);
+            u.setIme(ime);
+            u.setPrezime(prezime);
+            u.setEmail(email);
+            u.setNivo(nivo);
+            u.setTelefon(telefon);
+            u.setDatumRodjenja(datumRodjenja);
+            u.setNapomena(napomena);
             lista.add(u);
         }
         return lista;
@@ -366,7 +406,7 @@ public class Ucesnik implements ApstraktniDomenskiObjekat {
     /**
      * Vraća vrednosti atributa učesnika formatiranih za SQL UPDATE upit.
      *
-     * @return string sa vrednostima odvojenim zarezima, spreman za SQL upit
+     * @return string sa vrednostima u formatu "kolona=vrednost"
      */
     @Override
     public String vratiVrednostiZaIzmenu() {

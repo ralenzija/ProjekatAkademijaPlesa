@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.Date;
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 /**
  * Test klasa za klasu InstruktorSertifikat.
@@ -32,7 +34,6 @@ public class InstruktorSertifikatTest {
         datum = null;
     }
 
-
     @Test
     public void testBesparametarskiKonstruktor() {
         InstruktorSertifikat is = new InstruktorSertifikat();
@@ -48,12 +49,39 @@ public class InstruktorSertifikatTest {
         assertEquals(datum, instruktorSertifikat.getDatumSticanja(), "Datum sticanja nije ispravan");
     }
 
+    @Test
+    public void testKonstruktorBacaIzuzetakZaNullInstruktor() {
+        assertThrows(NullPointerException.class,
+                () -> new InstruktorSertifikat(null, sertifikat, datum),
+                "Konstruktor mora baciti NullPointerException za null instruktora");
+    }
+
+    @Test
+    public void testKonstruktorBacaIzuzetakZaNullSertifikat() {
+        assertThrows(NullPointerException.class,
+                () -> new InstruktorSertifikat(instruktor, null, datum),
+                "Konstruktor mora baciti NullPointerException za null sertifikat");
+    }
+
+    @Test
+    public void testKonstruktorBacaIzuzetakZaNullDatum() {
+        assertThrows(NullPointerException.class,
+                () -> new InstruktorSertifikat(instruktor, sertifikat, null),
+                "Konstruktor mora baciti NullPointerException za null datum");
+    }
 
     @Test
     public void testSetGetInstruktor() {
         Instruktor noviInstruktor = new Instruktor(2, "Ana", "Anic", "ana@gmail.com", "sifra456");
         instruktorSertifikat.setInstruktor(noviInstruktor);
         assertEquals(noviInstruktor, instruktorSertifikat.getInstruktor(), "Instruktor nije ispravan");
+    }
+
+    @Test
+    public void testSetInstruktorNullBacaIzuzetak() {
+        assertThrows(NullPointerException.class,
+                () -> instruktorSertifikat.setInstruktor(null),
+                "Mora baciti NullPointerException za null instruktora");
     }
 
     @Test
@@ -64,6 +92,13 @@ public class InstruktorSertifikatTest {
     }
 
     @Test
+    public void testSetSertifikatNullBacaIzuzetak() {
+        assertThrows(NullPointerException.class,
+                () -> instruktorSertifikat.setSertifikat(null),
+                "Mora baciti NullPointerException za null sertifikat");
+    }
+
+    @Test
     public void testSetGetDatumSticanja() {
         Date noviDatum = new Date(System.currentTimeMillis() + 10000);
         instruktorSertifikat.setDatumSticanja(noviDatum);
@@ -71,17 +106,11 @@ public class InstruktorSertifikatTest {
     }
 
     @Test
-    public void testSetInstruktorNull() {
-        instruktorSertifikat.setInstruktor(null);
-        assertNull(instruktorSertifikat.getInstruktor(), "Instruktor treba biti null");
+    public void testSetDatumSticanjaNullBacaIzuzetak() {
+        assertThrows(NullPointerException.class,
+                () -> instruktorSertifikat.setDatumSticanja(null),
+                "Mora baciti NullPointerException za null datum");
     }
-
-    @Test
-    public void testSetSertifikatNull() {
-        instruktorSertifikat.setSertifikat(null);
-        assertNull(instruktorSertifikat.getSertifikat(), "Sertifikat treba biti null");
-    }
-
 
     @Test
     public void testToStringNijeNull() {
@@ -93,7 +122,6 @@ public class InstruktorSertifikatTest {
         assertTrue(instruktorSertifikat.toString().contains("instruktor"),
                 "toString treba sadrzati 'instruktor'");
     }
-
 
     @Test
     public void testEqualsIstObjekat() {
@@ -120,6 +148,21 @@ public class InstruktorSertifikatTest {
                 "InstruktorSertifikati sa istim podacima moraju biti jednaki");
     }
 
+    @ParameterizedTest
+    @CsvSource({
+        "nikola@gmail.com, sifra123, 1, true",
+        "druga@gmail.com, sifra123, 1, false",
+        "nikola@gmail.com, sifra123, 2, false",
+        "druga@gmail.com, drugaSifra, 2, false"
+    })
+    public void testEqualsParametrizovano(String email, String sifra, int idSertifikata, boolean ocekivano) {
+        Instruktor i = new Instruktor(1, "Ime", "Prezime", email, sifra);
+        Sertifikat s = new Sertifikat(idSertifikata, PlesniStil.SALSA, "Organizacija");
+        InstruktorSertifikat drugi = new InstruktorSertifikat(i, s, datum);
+        assertEquals(ocekivano, instruktorSertifikat.equals(drugi),
+                "Equals test za email=" + email + " sertifikat id=" + idSertifikata);
+    }
+
     @Test
     public void testEqualsRazlicitiInstruktor() {
         Instruktor drugiInstruktor = new Instruktor(2, "Ana", "Anic", "ana@gmail.com", "sifra456");
@@ -136,13 +179,11 @@ public class InstruktorSertifikatTest {
                 "InstruktorSertifikati sa razlicitim sertifikatom ne smeju biti jednaki");
     }
 
-
     @Test
     public void testVratiNazivTabele() {
         assertEquals("instruktor_sertifikat", instruktorSertifikat.vratiNazivTabele(),
                 "Naziv tabele treba biti 'instruktor_sertifikat'");
     }
-
 
     @Test
     public void testVratiKoloneZaUbacivanje() {

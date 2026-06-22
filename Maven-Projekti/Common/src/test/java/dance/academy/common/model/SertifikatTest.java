@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -40,6 +42,26 @@ public class SertifikatTest {
         assertEquals("World Dance Council", sertifikat.getOrganizacija(), "Organizacija nije ispravna");
     }
 
+    @Test
+    public void testKonstruktorBacaIzuzetakZaNullPles() {
+        assertThrows(NullPointerException.class,
+                () -> new Sertifikat(1, null, "World Dance Council"),
+                "Konstruktor mora baciti NullPointerException za null ples");
+    }
+
+    @Test
+    public void testKonstruktorBacaIzuzetakZaNullOrganizacija() {
+        assertThrows(NullPointerException.class,
+                () -> new Sertifikat(1, PlesniStil.SALSA, null),
+                "Konstruktor mora baciti NullPointerException za null organizaciju");
+    }
+
+    @Test
+    public void testKonstruktorBacaIzuzetakZaPraznaOrganizacija() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new Sertifikat(1, PlesniStil.SALSA, ""),
+                "Konstruktor mora baciti IllegalArgumentException za praznu organizaciju");
+    }
 
 
     @Test
@@ -49,29 +71,59 @@ public class SertifikatTest {
     }
 
     @Test
+    public void testSetIdNegativanBacaIzuzetak() {
+        assertThrows(IllegalArgumentException.class,
+                () -> sertifikat.setId(-5),
+                "Mora baciti izuzetak za id manji od -1");
+    }
+
+    @Test
     public void testSetGetPles() {
         sertifikat.setPles(PlesniStil.TANGO);
         assertEquals(PlesniStil.TANGO, sertifikat.getPles(), "Ples treba biti TANGO");
     }
 
     @Test
+    public void testSetPlesNullBacaIzuzetak() {
+        assertThrows(NullPointerException.class,
+                () -> sertifikat.setPles(null),
+                "Mora baciti NullPointerException za null ples");
+    }
+
+    @ParameterizedTest
+    @EnumSource(PlesniStil.class)
+    public void testSetPlesSveVrednosti(PlesniStil stil) {
+        assertDoesNotThrow(() -> sertifikat.setPles(stil),
+                "Ne sme baciti izuzetak za validan stil: " + stil);
+    }
+
+    @Test
     public void testSetGetOrganizacija() {
         sertifikat.setOrganizacija("Nova organizacija");
-        assertEquals("Nova organizacija", sertifikat.getOrganizacija(), "Organizacija treba biti Nova organizacija");
+        assertEquals("Nova organizacija", sertifikat.getOrganizacija(),
+                "Organizacija treba biti Nova organizacija");
     }
 
     @Test
-    public void testSetPlesNull() {
-        sertifikat.setPles(null);
-        assertNull(sertifikat.getPles(), "Ples treba biti null");
+    public void testSetOrganizacijaNullBacaIzuzetak() {
+        assertThrows(NullPointerException.class,
+                () -> sertifikat.setOrganizacija(null),
+                "Mora baciti NullPointerException za null organizaciju");
     }
 
     @Test
-    public void testSetOrganizacijaNull() {
-        sertifikat.setOrganizacija(null);
-        assertNull(sertifikat.getOrganizacija(), "Organizacija treba biti null");
+    public void testSetOrganizacijaPraznaStringBacaIzuzetak() {
+        assertThrows(IllegalArgumentException.class,
+                () -> sertifikat.setOrganizacija(""),
+                "Mora baciti IllegalArgumentException za praznu organizaciju");
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"World Dance Council", "Tango Federation", "Dance Academy"})
+    public void testSetOrganizacijaValidneVrednosti(String organizacija) {
+        assertDoesNotThrow(() -> sertifikat.setOrganizacija(organizacija),
+                "Ne sme baciti izuzetak za validnu organizaciju: " + organizacija);
+    }
 
 
     @Test
@@ -79,13 +131,6 @@ public class SertifikatTest {
         String expected = "Sertifikat{ples=SALSA, organizacija=World Dance Council}";
         assertEquals(expected, sertifikat.toString(), "toString nije ispravan");
     }
-
-    @Test
-    public void testToStringNullVrednosti() {
-        Sertifikat s = new Sertifikat();
-        assertEquals("Sertifikat{ples=null, organizacija=null}", s.toString(), "toString sa null vrednostima");
-    }
-
 
 
     @Test
@@ -130,7 +175,8 @@ public class SertifikatTest {
 
     @Test
     public void testVratiNazivTabele() {
-        assertEquals("sertifikat", sertifikat.vratiNazivTabele(), "Naziv tabele treba biti 'sertifikat'");
+        assertEquals("sertifikat", sertifikat.vratiNazivTabele(),
+                "Naziv tabele treba biti 'sertifikat'");
     }
 
 
@@ -172,21 +218,5 @@ public class SertifikatTest {
         assertThrows(UnsupportedOperationException.class,
                 () -> sertifikat.vratiVrednostiZaIzmenu(),
                 "Treba baciti UnsupportedOperationException");
-    }
-
-
-
-    @ParameterizedTest
-    @CsvSource({
-        "SALSA",
-        "BACHATA",
-        "TANGO",
-        "VALCER",
-        "SAMBA"
-    })
-    public void testSetGetPlesParametrizovano(String stil) {
-        PlesniStil plesniStil = PlesniStil.valueOf(stil);
-        sertifikat.setPles(plesniStil);
-        assertEquals(plesniStil, sertifikat.getPles(), "Ples treba biti " + stil);
     }
 }

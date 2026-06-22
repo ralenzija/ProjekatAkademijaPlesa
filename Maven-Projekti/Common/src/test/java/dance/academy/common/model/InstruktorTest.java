@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -24,6 +25,7 @@ public class InstruktorTest {
         instruktor = null;
     }
 
+
     @Test
     public void testBesparametarskiKonstruktor() {
         Instruktor i = new Instruktor();
@@ -42,11 +44,39 @@ public class InstruktorTest {
         assertEquals("sifra123", instruktor.getSifra(), "Sifra nije ispravna");
     }
 
+    @Test
+    public void testKonstruktorBacaIzuzetakZaNullIme() {
+        assertThrows(NullPointerException.class,
+                () -> new Instruktor(1, null, "Nikolic", "nikola@gmail.com", "sifra123"),
+                "Konstruktor mora baciti NullPointerException za null ime");
+    }
+
+    @Test
+    public void testKonstruktorBacaIzuzetakZaNullEmail() {
+        assertThrows(NullPointerException.class,
+                () -> new Instruktor(1, "Nikola", "Nikolic", null, "sifra123"),
+                "Konstruktor mora baciti NullPointerException za null email");
+    }
+
+    @Test
+    public void testKonstruktorBacaIzuzetakZaNullSifra() {
+        assertThrows(NullPointerException.class,
+                () -> new Instruktor(1, "Nikola", "Nikolic", "nikola@gmail.com", null),
+                "Konstruktor mora baciti NullPointerException za null sifru");
+    }
+
 
     @Test
     public void testSetGetId() {
         instruktor.setId(99);
         assertEquals(99, instruktor.getId(), "ID treba biti 99");
+    }
+
+    @Test
+    public void testSetIdNegativanBacaIzuzetak() {
+        assertThrows(IllegalArgumentException.class,
+                () -> instruktor.setId(-5),
+                "Mora baciti izuzetak za id manji od -1");
     }
 
     @Test
@@ -56,9 +86,51 @@ public class InstruktorTest {
     }
 
     @Test
+    public void testSetImeNullBacaIzuzetak() {
+        assertThrows(NullPointerException.class,
+                () -> instruktor.setIme(null),
+                "Mora baciti NullPointerException za null ime");
+    }
+
+    @Test
+    public void testSetImePrazanStringBacaIzuzetak() {
+        assertThrows(IllegalArgumentException.class,
+                () -> instruktor.setIme(""),
+                "Mora baciti IllegalArgumentException za prazno ime");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Ana", "Marko", "Petar", "Jelena"})
+    public void testSetImeValidneVrednosti(String ime) {
+        assertDoesNotThrow(() -> instruktor.setIme(ime),
+                "Ne sme baciti izuzetak za validno ime: " + ime);
+    }
+
+    @Test
     public void testSetGetPrezime() {
         instruktor.setPrezime("Petrovic");
         assertEquals("Petrovic", instruktor.getPrezime(), "Prezime treba biti Petrovic");
+    }
+
+    @Test
+    public void testSetPrezimeNullBacaIzuzetak() {
+        assertThrows(NullPointerException.class,
+                () -> instruktor.setPrezime(null),
+                "Mora baciti NullPointerException za null prezime");
+    }
+
+    @Test
+    public void testSetPrezimePrazanStringBacaIzuzetak() {
+        assertThrows(IllegalArgumentException.class,
+                () -> instruktor.setPrezime(""),
+                "Mora baciti IllegalArgumentException za prazno prezime");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Jovanovic", "Petrovic", "Nikolic"})
+    public void testSetPrezimeValidneVrednosti(String prezime) {
+        assertDoesNotThrow(() -> instruktor.setPrezime(prezime),
+                "Ne sme baciti izuzetak za validno prezime: " + prezime);
     }
 
     @Test
@@ -68,21 +140,57 @@ public class InstruktorTest {
     }
 
     @Test
+    public void testSetEmailNullBacaIzuzetak() {
+        assertThrows(NullPointerException.class,
+                () -> instruktor.setEmail(null),
+                "Mora baciti NullPointerException za null email");
+    }
+
+    @Test
+    public void testSetEmailPrazanStringBacaIzuzetak() {
+        assertThrows(IllegalArgumentException.class,
+                () -> instruktor.setEmail(""),
+                "Mora baciti IllegalArgumentException za prazan email");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"ana@gmail.com", "marko@example.com", "test@test.com"})
+    public void testSetEmailValidneVrednosti(String email) {
+        assertDoesNotThrow(() -> instruktor.setEmail(email),
+                "Ne sme baciti izuzetak za validan email: " + email);
+    }
+
+    @Test
     public void testSetGetSifra() {
         instruktor.setSifra("novaSifra");
         assertEquals("novaSifra", instruktor.getSifra(), "Sifra treba biti novaSifra");
+    }
+
+    @Test
+    public void testSetSifraNullBacaIzuzetak() {
+        assertThrows(NullPointerException.class,
+                () -> instruktor.setSifra(null),
+                "Mora baciti NullPointerException za null sifru");
+    }
+
+    @Test
+    public void testSetSifraPrazanStringBacaIzuzetak() {
+        assertThrows(IllegalArgumentException.class,
+                () -> instruktor.setSifra(""),
+                "Mora baciti IllegalArgumentException za praznu sifru");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"sifra123", "lozinka", "abc123"})
+    public void testSetSifraValidneVrednosti(String sifra) {
+        assertDoesNotThrow(() -> instruktor.setSifra(sifra),
+                "Ne sme baciti izuzetak za validnu sifru: " + sifra);
     }
 
 
     @Test
     public void testToString() {
         assertEquals("Nikola Nikolic", instruktor.toString(), "toString treba vratiti 'Nikola Nikolic'");
-    }
-
-    @Test
-    public void testToStringNullIme() {
-        instruktor.setIme(null);
-        assertEquals("null Nikolic", instruktor.toString(), "toString sa null imenom");
     }
 
 

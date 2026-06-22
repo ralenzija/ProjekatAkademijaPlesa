@@ -5,10 +5,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Date;
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Test klasa za klasu StavkaUpisa.
@@ -56,15 +58,92 @@ public class StavkaUpisaTest {
     }
 
     @Test
+    public void testKonstruktorBacaIzuzetakZaNullProgram() {
+        assertThrows(NullPointerException.class,
+                () -> new StavkaUpisa(1, 5000.0, upis, null),
+                "Konstruktor mora baciti NullPointerException za null program");
+    }
+
+    @Test
+    public void testKonstruktorBacaIzuzetakZaNegativanIznos() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new StavkaUpisa(1, -100.0, upis, program),
+                "Konstruktor mora baciti IllegalArgumentException za negativan iznos");
+    }
+
+    @Test
+    public void testKonstruktorBacaIzuzetakZaNegativanRb() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new StavkaUpisa(-1, 5000.0, upis, program),
+                "Konstruktor mora baciti IllegalArgumentException za negativan rb");
+    }
+
+    @Test
     public void testSetGetRb() {
         stavka.setRb(99);
         assertEquals(99, stavka.getRb(), "RB treba biti 99");
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 5, 10, 99})
+    public void testSetRbValidneVrednosti(int rb) {
+        assertDoesNotThrow(() -> stavka.setRb(rb),
+                "Ne sme baciti izuzetak za validan rb: " + rb);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "1, 5000.0, true",
+        "2, 9999.0, false",
+        "3, 1000.0, false"
+    })
+    public void testEqualsParametrizovanoRazlicitiProgram(int idPrograma, double cena, boolean ocekivano) {
+        ProgramAktivnosti p = new ProgramAktivnosti(idPrograma, "Naziv", 4, cena,
+                PlesniStil.SALSA, true, "Sala A", LocalDate.of(2026, 1, 1),
+                LocalTime.of(18, 0), 20, "");
+        StavkaUpisa druga = new StavkaUpisa(1, cena, upis, p);
+        assertEquals(ocekivano, stavka.equals(druga),
+                "Equals test za program id=" + idPrograma);
+    }
+
+    @Test
+    public void testSetRbNegativanBacaIzuzetak() {
+        assertThrows(IllegalArgumentException.class,
+                () -> stavka.setRb(-1),
+                "Mora baciti izuzetak za negativan rb");
+    }
+
+    @Test
+    public void testSetRbNulaBacaIzuzetak() {
+        assertThrows(IllegalArgumentException.class,
+                () -> stavka.setRb(0),
+                "Mora baciti izuzetak za rb jednak nuli");
     }
 
     @Test
     public void testSetGetIznos() {
         stavka.setIznos(9999.99);
         assertEquals(9999.99, stavka.getIznos(), "Iznos treba biti 9999.99");
+    }
+
+    @Test
+    public void testSetIznosNegativanBacaIzuzetak() {
+        assertThrows(IllegalArgumentException.class,
+                () -> stavka.setIznos(-100.0),
+                "Mora baciti izuzetak za negativan iznos");
+    }
+
+    @Test
+    public void testSetIznosNulaDozvoljena() {
+        assertDoesNotThrow(() -> stavka.setIznos(0.0),
+                "Iznos nula treba biti dozvoljen");
+    }
+
+    @ParameterizedTest
+    @ValueSource(doubles = {1000.0, 2500.5, 0.0, 99999.99})
+    public void testSetIznosValidneVrednosti(double iznos) {
+        assertDoesNotThrow(() -> stavka.setIznos(iznos),
+                "Ne sme baciti izuzetak za validan iznos: " + iznos);
     }
 
     @Test
@@ -76,35 +155,25 @@ public class StavkaUpisaTest {
     }
 
     @Test
+    public void testSetUpisNullDozvoljeno() {
+        assertDoesNotThrow(() -> stavka.setUpis(null),
+                "Null upis treba biti dozvoljen");
+    }
+
+    @Test
     public void testSetGetProgram() {
-        ProgramAktivnosti noviProgram = new ProgramAktivnosti();
-        noviProgram.setId(2);
+        ProgramAktivnosti noviProgram = new ProgramAktivnosti(2, "Tango", 4, 3000.0,
+                PlesniStil.TANGO, true, "Sala B", LocalDate.of(2026, 2, 1),
+                LocalTime.of(19, 0), 15, "");
         stavka.setProgram(noviProgram);
         assertEquals(noviProgram, stavka.getProgram(), "Program nije ispravan");
     }
 
     @Test
-    public void testSetUpisNull() {
-        stavka.setUpis(null);
-        assertNull(stavka.getUpis(), "Upis treba biti null");
-    }
-
-    @Test
-    public void testSetProgramNull() {
-        stavka.setProgram(null);
-        assertNull(stavka.getProgram(), "Program treba biti null");
-    }
-
-    @ParameterizedTest
-    @CsvSource({
-        "1000.0",
-        "2500.5",
-        "0.0",
-        "99999.99"
-    })
-    public void testSetIznosParametrizovano(double iznos) {
-        stavka.setIznos(iznos);
-        assertEquals(iznos, stavka.getIznos(), "Iznos treba biti " + iznos);
+    public void testSetProgramNullBacaIzuzetak() {
+        assertThrows(NullPointerException.class,
+                () -> stavka.setProgram(null),
+                "Mora baciti NullPointerException za null program");
     }
 
     @Test
@@ -141,14 +210,16 @@ public class StavkaUpisaTest {
     @Test
     public void testEqualsRazlicitiProgram() {
         ProgramAktivnosti drugiProgram = new ProgramAktivnosti(2, "Tango srednji", 8, 4000.0,
-                PlesniStil.TANGO, true, "Sala B", LocalDate.of(2026, 2, 1), LocalTime.of(19, 0), 15, "");
+                PlesniStil.TANGO, true, "Sala B", LocalDate.of(2026, 2, 1),
+                LocalTime.of(19, 0), 15, "");
         StavkaUpisa druga = new StavkaUpisa(1, 5000.0, upis, drugiProgram);
         assertFalse(stavka.equals(druga), "Stavke sa razlicitim programom ne smeju biti jednake");
     }
 
     @Test
     public void testVratiNazivTabele() {
-        assertEquals("stavka_upisa", stavka.vratiNazivTabele(), "Naziv tabele treba biti 'stavka_upisa'");
+        assertEquals("stavka_upisa", stavka.vratiNazivTabele(),
+                "Naziv tabele treba biti 'stavka_upisa'");
     }
 
     @Test
@@ -186,8 +257,6 @@ public class StavkaUpisaTest {
 
     @Test
     public void testVratiListuNijeNull() {
-        // vratiListu ima implementaciju, ne baca izuzetak
-        // proveravamo samo da metoda postoji i da se moze pozvati na ispravan nacin
         assertNotNull(stavka.vratiNazivTabele(), "Naziv tabele ne sme biti null");
     }
 }
